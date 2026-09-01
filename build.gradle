@@ -10,9 +10,11 @@ buildscript {
             url = "https://oss.sonatype.org/content/repositories/public/"
         }
     }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-    }
+	dependencies {
+		classpath ('com.anatawa12.forge:ForgeGradle:1.2-1.1.+') {
+			changing = true
+		}
+	}
 }
 
 plugins
