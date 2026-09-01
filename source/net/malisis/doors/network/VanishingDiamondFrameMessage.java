@@ -25,8 +25,6 @@
 package net.malisis.doors.network;
 
 import io.netty.buffer.ByteBuf;
-import net.malisis.core.network.MalisisMessage;
-import net.malisis.core.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.entity.VanishingDiamondTileEntity;
 import net.minecraft.world.World;
@@ -34,13 +32,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * @author Ordinastie
  *
  */
-@MalisisMessage
 public class VanishingDiamondFrameMessage implements IMessageHandler<VanishingDiamondFrameMessage.Packet, IMessage>
 {
 	public static enum DataType
@@ -48,17 +44,13 @@ public class VanishingDiamondFrameMessage implements IMessageHandler<VanishingDi
 		PROPAGATION, DELAY, INVERSED, DURATION;
 	}
 
-	public VanishingDiamondFrameMessage()
-	{
-		MalisisDoors.network.registerMessage(this, VanishingDiamondFrameMessage.Packet.class, Side.SERVER);
-	}
-
 	@Override
 	public IMessage onMessage(Packet message, MessageContext ctx)
 	{
 		World world = ctx.getServerHandler().playerEntity.worldObj;
-		VanishingDiamondTileEntity te = TileEntityUtils.getTileEntity(VanishingDiamondTileEntity.class, world, message.x, message.y,
-				message.z);
+		if (!(world.getTileEntity(message.x, message.y, message.z) instanceof VanishingDiamondTileEntity))
+			return null;
+		VanishingDiamondTileEntity te = (VanishingDiamondTileEntity) world.getTileEntity(message.x, message.y, message.z);
 		if (te == null)
 			return null;
 

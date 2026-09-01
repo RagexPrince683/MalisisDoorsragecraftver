@@ -43,8 +43,6 @@ sourceSets
 dependencies
 {
 	compile 'org.projectlombok:lombok:1.14.8'
-	//compile 'net.malisis:malisiscore:1.7.10-0.14.3:dev'
-	compile files('../MalisisCore/build/libs/malisiscore-1.7.10-0.14.3-dev.jar')
 }
 
 // because the normal output has been made to be obfuscated
@@ -177,9 +175,6 @@ if (project.hasProperty('curseapi')) {
 			
 			addArtifact deobfJar
 			
-			relations {
-				requiredLibrary 'malisiscore'
-			}		   		
 		}
 	}
 }

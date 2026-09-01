@@ -26,45 +26,51 @@ package net.malisis.doors;
 
 import java.io.File;
 
-import net.malisis.core.configuration.ConfigurationSetting;
-import net.malisis.core.configuration.Settings;
-import net.malisis.core.configuration.setting.BooleanSetting;
-import net.malisis.core.configuration.setting.DoubleSetting;
-import net.malisis.core.configuration.setting.Setting;
+import net.minecraftforge.common.config.Configuration;
 
-public class MalisisDoorsSettings extends Settings
+public class MalisisDoorsSettings
 {
-	@ConfigurationSetting
-	public static Setting<Boolean> modifyVanillaDoors = new BooleanSetting("config.modifyVanillaDoors", true);
-	@ConfigurationSetting
-	public static Setting<Boolean> enableMixedBlocks = new BooleanSetting("config.enableMixedBlocks", true);
-	@ConfigurationSetting
-	public static Setting<Boolean> enhancedMixedBlockPlacement = new BooleanSetting("config.enhancedMixedBlockPlacement", true);
-	@ConfigurationSetting
-	public static Setting<Boolean> simpleMixedBlockRendering = new BooleanSetting("config.simpleMixedBlockRendering", false);
-	@ConfigurationSetting
-	public static Setting<Boolean> enableVanishingBlocks = new BooleanSetting("config.enableVanishingBlocks", true);
-	@ConfigurationSetting
-	public static Setting<Boolean> enableVanishingGlitch = new BooleanSetting("config.enableVanishingGlitch", true);
-	@ConfigurationSetting
-	public static Setting<Double> vanishingGlitchChance = new DoubleSetting("config.vanishingGlitchChance", 0.0005D);
-	@ConfigurationSetting
-	public static Setting<Boolean> enableCamoFenceGate = new BooleanSetting("config.enableCamoFenceGate", true);
+	private static final String CATEGORY = Configuration.CATEGORY_GENERAL;
+	private final Configuration configuration;
+
+	public static boolean modifyVanillaDoors = true;
+	public static boolean enableMixedBlocks = true;
+	public static boolean enhancedMixedBlockPlacement = true;
+	public static boolean simpleMixedBlockRendering = false;
+	public static boolean enableVanishingBlocks = true;
+	public static boolean enableVanishingGlitch = true;
+	public static double vanishingGlitchChance = 0.0005D;
+	public static boolean enableCamoFenceGate = true;
 
 	public MalisisDoorsSettings(File file)
 	{
-		super(file);
+		configuration = new Configuration(file);
+		load();
 	}
 
-	@Override
-	protected void initSettings()
+	public void load()
 	{
-		modifyVanillaDoors.setComment("config.modifyVanillaDoors.comment1", "config.modifyVanillaDoors.comment2");
-		simpleMixedBlockRendering.setComment("config.simpleMixedBlockRendering.comment1", "config.simpleMixedBlockRendering.comment2");
-		enableVanishingGlitch.setComment("config.enableVanishingGlitch.comment");
-		vanishingGlitchChance.setComment("config.vanishingGlitchChance.comment");
-		enhancedMixedBlockPlacement
-				.setComment("config.enhancedMixedBlockPlacement.comment1", "config.enhancedMixedBlockPlacement.comment2");
-		enableCamoFenceGate.setComment("config.enableCamoFenceGate.comment");
+		configuration.load();
+		modifyVanillaDoors = configuration.getBoolean("modifyVanillaDoors", CATEGORY, true,
+				"Replace vanilla doors with animated MalisisDoors equivalents.");
+		enableMixedBlocks = configuration.getBoolean("enableMixedBlocks", CATEGORY, true, "Enable mixed blocks.");
+		enhancedMixedBlockPlacement = configuration.getBoolean("enhancedMixedBlockPlacement", CATEGORY, true,
+				"Use the enhanced mixed-block placement behavior.");
+		simpleMixedBlockRendering = configuration.getBoolean("simpleMixedBlockRendering", CATEGORY, false,
+				"Use the simpler mixed-block renderer.");
+		enableVanishingBlocks = configuration.getBoolean("enableVanishingBlocks", CATEGORY, true, "Enable vanishing blocks.");
+		enableVanishingGlitch = configuration.getBoolean("enableVanishingGlitch", CATEGORY, true,
+				"Allow the occasional vanishing-block visual glitch.");
+		vanishingGlitchChance = configuration.get(CATEGORY, "vanishingGlitchChance", 0.0005D,
+				"Chance of a vanishing-block glitch per update.").getDouble(0.0005D);
+		enableCamoFenceGate = configuration.getBoolean("enableCamoFenceGate", CATEGORY, true, "Enable camouflage fence gates.");
+		save();
+	}
+
+	public void save()
+	{
+		configuration.get(CATEGORY, "simpleMixedBlockRendering", false).set(simpleMixedBlockRendering);
+		if (configuration.hasChanged())
+			configuration.save();
 	}
 }

@@ -142,8 +142,8 @@ public class VanishingBlockRenderer extends MalisisRenderer
 			renderBlocks.renderAllFaces = true;
 			try
 			{
-				boolean smbr = MalisisDoorsSettings.simpleMixedBlockRendering.get();
-				MalisisDoorsSettings.simpleMixedBlockRendering.set(true);
+				boolean smbr = MalisisDoorsSettings.simpleMixedBlockRendering;
+				MalisisDoorsSettings.simpleMixedBlockRendering = true;
 
 				GL11.glPushMatrix();
 				GL11.glTranslated(0.5F, 0.5F, 0.5F);
@@ -181,7 +181,7 @@ public class VanishingBlockRenderer extends MalisisRenderer
 					TileEntityRendererDispatcher.instance.renderTileEntity(te.copiedTileEntity, partialTick);
 				}
 
-				MalisisDoorsSettings.simpleMixedBlockRendering.set(smbr);
+				MalisisDoorsSettings.simpleMixedBlockRendering = smbr;
 
 			}
 			catch (Exception e)

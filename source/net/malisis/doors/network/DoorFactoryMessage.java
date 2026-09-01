@@ -25,8 +25,6 @@
 package net.malisis.doors.network;
 
 import io.netty.buffer.ByteBuf;
-import net.malisis.core.network.MalisisMessage;
-import net.malisis.core.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.DoorRegistry;
 import net.malisis.doors.entity.DoorFactoryTileEntity;
@@ -35,25 +33,20 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * @author Ordinastie
  *
  */
-@MalisisMessage
 public class DoorFactoryMessage implements IMessageHandler<DoorFactoryMessage.Packet, IMessage>
 {
-	public DoorFactoryMessage()
-	{
-		MalisisDoors.network.registerMessage(this, DoorFactoryMessage.Packet.class, Side.SERVER);
-	}
-
 	@Override
 	public IMessage onMessage(Packet message, MessageContext ctx)
 	{
 		World world = ctx.getServerHandler().playerEntity.worldObj;
-		DoorFactoryTileEntity te = TileEntityUtils.getTileEntity(DoorFactoryTileEntity.class, world, message.x, message.y, message.z);
+		if (!(world.getTileEntity(message.x, message.y, message.z) instanceof DoorFactoryTileEntity))
+			return null;
+		DoorFactoryTileEntity te = (DoorFactoryTileEntity) world.getTileEntity(message.x, message.y, message.z);
 		if (te == null)
 			return null;
 

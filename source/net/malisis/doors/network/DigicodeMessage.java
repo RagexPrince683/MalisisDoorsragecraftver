@@ -25,7 +25,6 @@
 package net.malisis.doors.network;
 
 import io.netty.buffer.ByteBuf;
-import net.malisis.core.network.MalisisMessage;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
@@ -33,20 +32,13 @@ import net.minecraft.world.World;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * @author Ordinastie
  *
  */
-@MalisisMessage
 public class DigicodeMessage implements IMessageHandler<DigicodeMessage.Packet, IMessage>
 {
-	public DigicodeMessage()
-	{
-		MalisisDoors.network.registerMessage(this, DigicodeMessage.Packet.class, Side.SERVER);
-	}
-
 	@Override
 	public IMessage onMessage(Packet message, MessageContext ctx)
 	{
