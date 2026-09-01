@@ -90,7 +90,7 @@ public class Registers
 {
 	public static void init()
 	{
-		if (MalisisDoorsSettings.modifyVanillaDoors.get())
+		if (MalisisDoorsSettings.modifyVanillaDoors)
 		{
 			registerVanillaDoors();
 			registerVanillaTrapDoor();
@@ -109,10 +109,10 @@ public class Registers
 
 		registerPlayerSensor();
 
-		if (MalisisDoorsSettings.enableVanishingBlocks.get())
+		if (MalisisDoorsSettings.enableVanishingBlocks)
 			registerVanishingBlock();
 
-		if (MalisisDoorsSettings.enableMixedBlocks.get())
+		if (MalisisDoorsSettings.enableMixedBlocks)
 			registerMixedBlock();
 
 		registerGarageDoor();

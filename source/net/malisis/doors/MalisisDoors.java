@@ -1,9 +1,5 @@
 package net.malisis.doors;
 
-import net.malisis.core.IMalisisMod;
-import net.malisis.core.MalisisCore;
-import net.malisis.core.configuration.Settings;
-import net.malisis.core.network.MalisisNetwork;
 import net.malisis.core.renderer.font.MalisisFont;
 import net.malisis.doors.block.BlockMixer;
 import net.malisis.doors.block.DoorFactory;
@@ -25,11 +21,17 @@ import net.minecraft.item.Item;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
+import net.malisis.doors.network.DigicodeMessage;
+import net.malisis.doors.network.DoorFactoryMessage;
+import net.malisis.doors.network.VanishingDiamondFrameMessage;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = MalisisDoors.modid, name = MalisisDoors.modname, version = MalisisDoors.version, dependencies = "required-after:malisiscore")
-public class MalisisDoors implements IMalisisMod
+@Mod(modid = MalisisDoors.modid, name = MalisisDoors.modname, version = MalisisDoors.version)
+public class MalisisDoors
 {
 	@SidedProxy(clientSide = "net.malisis.doors.proxy.ClientProxy", serverSide = "net.malisis.doors.proxy.ServerProxy")
 	public static IProxy proxy;
@@ -39,7 +41,7 @@ public class MalisisDoors implements IMalisisMod
 	public static final String version = "${version}";
 
 	public static MalisisDoors instance;
-	public static MalisisNetwork network;
+	public static SimpleNetworkWrapper network;
 	public static MalisisDoorsSettings settings;
 
 	public static CreativeTabs tab = new MalisisDoorsTab();
@@ -48,32 +50,10 @@ public class MalisisDoors implements IMalisisMod
 	public MalisisDoors()
 	{
 		instance = this;
-		network = new MalisisNetwork(this);
-		MalisisCore.registerMod(this);
-	}
-
-	@Override
-	public String getModId()
-	{
-		return modid;
-	}
-
-	@Override
-	public String getName()
-	{
-		return modname;
-	}
-
-	@Override
-	public String getVersion()
-	{
-		return version;
-	}
-
-	@Override
-	public Settings getSettings()
-	{
-		return settings;
+		network = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
+		network.registerMessage(DigicodeMessage.class, DigicodeMessage.Packet.class, 0, Side.SERVER);
+		network.registerMessage(DoorFactoryMessage.class, DoorFactoryMessage.Packet.class, 1, Side.SERVER);
+		network.registerMessage(VanishingDiamondFrameMessage.class, VanishingDiamondFrameMessage.Packet.class, 2, Side.SERVER);
 	}
 
 	@EventHandler

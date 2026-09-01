@@ -82,7 +82,7 @@ public class MixedBlock extends Block implements ITileEntityProvider
 			return;
 		te.set(itemStack);
 
-		if (MalisisDoorsSettings.enhancedMixedBlockPlacement.get())
+		if (MalisisDoorsSettings.enhancedMixedBlockPlacement)
 		{
 			ForgeDirection dir = EntityUtils.getEntityFacing(player, true);
 			if (!player.isSneaking())

@@ -14,3 +14,14 @@ the frame. Different types of frames implies different vanishing propagation beh
   - gold frames propagate to all frames around painted with the same block and the same metadata (ie red wool would not make a blue wool vanish)
   - diamond frames has their own GUI to configure their behavior. You can choose for each direction if they should propagate and the delay 
   - Frames not painted automatically propagate their state.
+
+## Standalone migration architecture
+
+This fork is migrating MalisisDoors to a standalone Forge 1.7.10 implementation. The
+configuration and packet transport are owned by MalisisDoors and use Forge's
+`Configuration` and `SimpleNetworkWrapper` APIs directly. Renderer and animation
+replacements belong under `net.malisis.doors.renderer` and
+`net.malisis.doors.door.movement`; focused Minecraft/Forge adapters belong under
+`net.malisis.doors.util`. These boundaries are intended to keep future Angelica
+compatibility fixes local and avoid assumptions about a third-party renderer's GL
+state.

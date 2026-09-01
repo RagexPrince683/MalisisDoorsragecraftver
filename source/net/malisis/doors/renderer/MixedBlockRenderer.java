@@ -128,7 +128,7 @@ public class MixedBlockRenderer extends MalisisRenderer
 			enableBlending();
 		}
 
-		if (MalisisDoorsSettings.simpleMixedBlockRendering.get() || !Minecraft.getMinecraft().gameSettings.fancyGraphics)
+		if (MalisisDoorsSettings.simpleMixedBlockRendering || !Minecraft.getMinecraft().gameSettings.fancyGraphics)
 		{
 			renderSimple();
 			return;

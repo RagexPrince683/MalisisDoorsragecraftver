@@ -67,13 +67,13 @@ public class BlockMixerGui extends MalisisGui
 		progressBar.setProgress(tileEntity.getMixTimer());
 		progressBarReversed.setProgress(tileEntity.getMixTimer());
 
-		cbRender.setChecked(MalisisDoorsSettings.simpleMixedBlockRendering.get());
+		cbRender.setChecked(MalisisDoorsSettings.simpleMixedBlockRendering);
 	}
 
 	@Subscribe
 	public void onCheck(UICheckBox.CheckEvent event)
 	{
-		MalisisDoorsSettings.simpleMixedBlockRendering.set(event.isChecked());
+		MalisisDoorsSettings.simpleMixedBlockRendering = event.isChecked();
 		MalisisDoors.settings.save();
 	}
 

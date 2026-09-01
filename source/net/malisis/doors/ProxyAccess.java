@@ -27,7 +27,8 @@ package net.malisis.doors;
 import java.util.WeakHashMap;
 
 import lombok.experimental.Delegate;
-import net.malisis.core.MalisisCore;
+import cpw.mods.fml.common.FMLLog;
+import org.apache.logging.log4j.Level;
 import net.malisis.doors.entity.VanishingTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -86,7 +87,7 @@ public class ProxyAccess
 				}
 				catch (Exception e)
 				{
-					MalisisCore.log.error("[ProxyAccess] Proxy world instanciation failed :", e);
+					FMLLog.log(MalisisDoors.modid, Level.ERROR, e, "Proxy world instantiation failed");
 					worldInstanciationFailed = true;
 					return world;
 				}

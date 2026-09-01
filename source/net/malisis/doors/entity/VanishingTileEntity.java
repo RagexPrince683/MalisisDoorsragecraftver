@@ -148,8 +148,8 @@ public class VanishingTileEntity extends TileEntity
 		if (!inTransition && !powered)
 		{
 			float r = rand.nextFloat();
-			boolean b = r < MalisisDoorsSettings.vanishingGlitchChance.get();
-			if (b && MalisisDoorsSettings.enableVanishingGlitch.get())
+			boolean b = r < MalisisDoorsSettings.vanishingGlitchChance;
+			if (b && MalisisDoorsSettings.enableVanishingGlitch)
 			{
 				vibrating = true;
 				vibratingTimer = 0;
