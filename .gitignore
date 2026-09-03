@@ -2,6 +2,7 @@
 build/*
 !build/libs/
 !build/libs/*
+/build/devmods/remapped/
 bin/*
 .gradle/*
 .project
@@ -9,9 +10,9 @@ bin/*
 *.iml
 .settings/*
 /bin
-gradle.properties
 init.gradle
 /libs
 /devmods/*
 !/devmods/.gitkeep
+/devmods/deobf/
 /assets/
