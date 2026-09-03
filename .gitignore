@@ -16,3 +16,4 @@ init.gradle
 !/devmods/.gitkeep
 /devmods/deobf/
 /assets/
+/run/
