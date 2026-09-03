@@ -72,7 +72,7 @@ public class SaloonDoorTileEntity extends DoorTileEntity
 		}
 
 		openBackward = entityPos > tePos;
-		//	MalisisCore.message(getDirection() + "  = B ? " + openBackward + " (" + entityPos + " > " + (tePos) + ")");
+		//	InternalSupport.message(getDirection() + "  = B ? " + openBackward + " (" + entityPos + " > " + (tePos) + ")");
 	}
 
 	@Override

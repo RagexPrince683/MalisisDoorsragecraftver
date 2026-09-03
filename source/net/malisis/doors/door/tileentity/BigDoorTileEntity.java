@@ -24,12 +24,12 @@
 
 package net.malisis.doors.door.tileentity;
 
-import net.malisis.core.MalisisCore;
-import net.malisis.core.block.BoundingBoxType;
-import net.malisis.core.util.BlockState;
-import net.malisis.core.util.MultiBlock;
-import net.malisis.core.util.chunkblock.ChunkBlockHandler;
-import net.malisis.core.util.chunkcollision.ChunkCollision;
+import net.malisis.doors.internal.InternalSupport;
+import net.malisis.doors.internal.block.BoundingBoxType;
+import net.malisis.doors.internal.util.BlockState;
+import net.malisis.doors.internal.util.MultiBlock;
+import net.malisis.doors.internal.util.chunkblock.ChunkBlockHandler;
+import net.malisis.doors.internal.util.chunkcollision.ChunkCollision;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.DoorRegistry;
 import net.malisis.doors.door.DoorState;
@@ -122,12 +122,12 @@ public class BigDoorTileEntity extends DoorTileEntity
 		{
 			if (delete)
 			{
-				MalisisCore.log.info("Deleting " + xCoord + "," + yCoord + "," + zCoord);
+				InternalSupport.log.info("Deleting " + xCoord + "," + yCoord + "," + zCoord);
 				getWorld().setBlockToAir(xCoord, yCoord, zCoord);
 			}
 			else
 			{
-				MalisisCore.log.info("Adding to chunk : " + xCoord + "," + yCoord + "," + zCoord);
+				InternalSupport.log.info("Adding to chunk : " + xCoord + "," + yCoord + "," + zCoord);
 				ChunkBlockHandler.get().updateCoordinates(getWorld().getChunkFromBlockCoords(xCoord, zCoord), xCoord, yCoord, zCoord,
 						Blocks.air, getBlockType());
 				getWorld().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, Door.dirToInt(direction), 2);

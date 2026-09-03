@@ -24,14 +24,14 @@
 
 package net.malisis.doors.door.renderer;
 
-import net.malisis.core.renderer.RenderType;
-import net.malisis.core.renderer.element.Shape;
-import net.malisis.core.renderer.element.face.BottomFace;
-import net.malisis.core.renderer.element.face.NorthFace;
-import net.malisis.core.renderer.element.face.SouthFace;
-import net.malisis.core.renderer.element.face.TopFace;
-import net.malisis.core.renderer.element.shape.Cube;
-import net.malisis.core.renderer.model.MalisisModel;
+import net.malisis.doors.internal.renderer.RenderType;
+import net.malisis.doors.internal.renderer.element.Shape;
+import net.malisis.doors.internal.renderer.element.face.BottomFace;
+import net.malisis.doors.internal.renderer.element.face.NorthFace;
+import net.malisis.doors.internal.renderer.element.face.SouthFace;
+import net.malisis.doors.internal.renderer.element.face.TopFace;
+import net.malisis.doors.internal.renderer.element.shape.Cube;
+import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.tileentity.CustomDoorTileEntity;
 import net.minecraft.block.Block;

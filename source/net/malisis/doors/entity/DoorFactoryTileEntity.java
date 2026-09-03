@@ -24,13 +24,13 @@
 
 package net.malisis.doors.entity;
 
-import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.inventory.IInventoryProvider;
-import net.malisis.core.inventory.MalisisInventory;
-import net.malisis.core.inventory.MalisisInventoryContainer;
-import net.malisis.core.inventory.MalisisSlot;
-import net.malisis.core.util.ItemUtils;
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.client.gui.MalisisGui;
+import net.malisis.doors.internal.inventory.IInventoryProvider;
+import net.malisis.doors.internal.inventory.MalisisInventory;
+import net.malisis.doors.internal.inventory.MalisisInventoryContainer;
+import net.malisis.doors.internal.inventory.MalisisSlot;
+import net.malisis.doors.internal.util.ItemUtils;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.DoorRegistry;

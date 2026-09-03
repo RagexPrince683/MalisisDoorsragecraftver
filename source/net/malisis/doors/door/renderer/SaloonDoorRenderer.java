@@ -24,8 +24,8 @@
 
 package net.malisis.doors.door.renderer;
 
-import net.malisis.core.renderer.animation.Animation;
-import net.malisis.core.renderer.model.MalisisModel;
+import net.malisis.doors.internal.renderer.animation.Animation;
+import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.MalisisDoors;
 import net.minecraft.util.ResourceLocation;
 

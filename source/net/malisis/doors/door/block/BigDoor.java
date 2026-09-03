@@ -26,16 +26,16 @@ package net.malisis.doors.door.block;
 
 import java.util.ArrayList;
 
-import net.malisis.core.block.BoundingBoxType;
-import net.malisis.core.block.MalisisBlock;
-import net.malisis.core.util.AABBUtils;
-import net.malisis.core.util.BlockPos;
-import net.malisis.core.util.BlockState;
-import net.malisis.core.util.EntityUtils;
-import net.malisis.core.util.TileEntityUtils;
-import net.malisis.core.util.chunkcollision.ChunkCollision;
-import net.malisis.core.util.chunkcollision.IChunkCollidable;
-import net.malisis.core.util.chunklistener.IBlockListener;
+import net.malisis.doors.internal.block.BoundingBoxType;
+import net.malisis.doors.internal.block.MalisisBlock;
+import net.malisis.doors.internal.util.AABBUtils;
+import net.malisis.doors.internal.util.BlockPos;
+import net.malisis.doors.internal.util.BlockState;
+import net.malisis.doors.internal.util.EntityUtils;
+import net.malisis.doors.internal.util.TileEntityUtils;
+import net.malisis.doors.internal.util.chunkcollision.ChunkCollision;
+import net.malisis.doors.internal.util.chunkcollision.IChunkCollidable;
+import net.malisis.doors.internal.util.chunklistener.IBlockListener;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.MalisisDoors.Items;
 import net.malisis.doors.door.tileentity.BigDoorTileEntity;
@@ -152,7 +152,7 @@ public class BigDoor extends MalisisBlock implements ITileEntityProvider, IChunk
 		if (te == null)
 			return AABBUtils.identities();
 
-		//MalisisCore.message(te.getDirection());
+		//InternalSupport.message(te.getDirection());
 
 		AxisAlignedBB[] aabbs = new AxisAlignedBB[] { defaultBoundingBox.copy() };
 		if (type == BoundingBoxType.RENDER)

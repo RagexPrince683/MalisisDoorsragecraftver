@@ -27,7 +27,7 @@ package net.malisis.doors.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.block.GarageDoor;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
