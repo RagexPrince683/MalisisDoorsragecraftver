@@ -1,3 +1,12 @@
+# Fix MalisisIcon Java compilation
+
+## Fixed
+
+- Replaced direct access to private Minecraft `TextureAtlasSprite` UV and
+  anisotropic-filtering fields with synchronized state owned by `MalisisIcon`.
+- Preserved custom UV interpolation, clipping, offsets, flips, dependent icons,
+  sprite copying, and anisotropic texture borders on Forge 1.7.10.
+
 # Standalone MalisisCore removal
 
 ## Changed
