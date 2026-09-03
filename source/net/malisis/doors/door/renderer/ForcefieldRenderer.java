@@ -24,15 +24,15 @@
 
 package net.malisis.doors.door.renderer;
 
-import net.malisis.core.block.BoundingBoxType;
-import net.malisis.core.renderer.MalisisRenderer;
-import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.animation.AnimationRenderer;
-import net.malisis.core.renderer.element.Shape;
-import net.malisis.core.renderer.element.Vertex;
-import net.malisis.core.renderer.element.face.NorthFace;
-import net.malisis.core.renderer.model.MalisisModel;
-import net.malisis.core.util.MultiBlock;
+import net.malisis.doors.internal.block.BoundingBoxType;
+import net.malisis.doors.internal.renderer.MalisisRenderer;
+import net.malisis.doors.internal.renderer.RenderParameters;
+import net.malisis.doors.internal.renderer.animation.AnimationRenderer;
+import net.malisis.doors.internal.renderer.element.Shape;
+import net.malisis.doors.internal.renderer.element.Vertex;
+import net.malisis.doors.internal.renderer.element.face.NorthFace;
+import net.malisis.doors.internal.renderer.model.MalisisModel;
+import net.malisis.doors.internal.util.MultiBlock;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.tileentity.ForcefieldTileEntity;
 import net.minecraft.util.AxisAlignedBB;

@@ -24,11 +24,11 @@
 
 package net.malisis.doors.renderer;
 
-import net.malisis.core.renderer.MalisisRenderer;
-import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.RenderType;
-import net.malisis.core.renderer.element.Shape;
-import net.malisis.core.renderer.model.MalisisModel;
+import net.malisis.doors.internal.renderer.MalisisRenderer;
+import net.malisis.doors.internal.renderer.RenderParameters;
+import net.malisis.doors.internal.renderer.RenderType;
+import net.malisis.doors.internal.renderer.element.Shape;
+import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.MalisisDoors;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;

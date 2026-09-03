@@ -24,7 +24,7 @@
 
 package net.malisis.doors.door.tileentity;
 
-import net.malisis.core.util.Timer;
+import net.malisis.doors.internal.util.Timer;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;

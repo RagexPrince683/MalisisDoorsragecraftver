@@ -26,9 +26,9 @@ package net.malisis.doors.block;
 
 import java.util.List;
 
-import net.malisis.core.inventory.IInventoryProvider;
-import net.malisis.core.inventory.MalisisInventory;
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.inventory.IInventoryProvider;
+import net.malisis.doors.internal.inventory.MalisisInventory;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.entity.VanishingDiamondTileEntity;
 import net.malisis.doors.entity.VanishingTileEntity;
 import net.minecraft.creativetab.CreativeTabs;

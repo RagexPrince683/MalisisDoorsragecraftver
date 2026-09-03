@@ -24,9 +24,9 @@
 
 package net.malisis.doors.gui;
 
-import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.container.UIWindow;
+import net.malisis.doors.internal.client.gui.Anchor;
+import net.malisis.doors.internal.client.gui.MalisisGui;
+import net.malisis.doors.internal.client.gui.component.container.UIWindow;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
 import net.malisis.doors.network.DigicodeMessage;
 

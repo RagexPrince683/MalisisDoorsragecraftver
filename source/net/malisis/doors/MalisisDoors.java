@@ -1,6 +1,6 @@
 package net.malisis.doors;
 
-import net.malisis.core.renderer.font.MalisisFont;
+import net.malisis.doors.internal.renderer.font.MalisisFont;
 import net.malisis.doors.block.BlockMixer;
 import net.malisis.doors.block.DoorFactory;
 import net.malisis.doors.block.GarageDoor;

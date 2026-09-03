@@ -26,8 +26,8 @@ package net.malisis.doors.block;
 
 import java.util.ArrayList;
 
-import net.malisis.core.util.EntityUtils;
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.util.EntityUtils;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoorsSettings;
 import net.malisis.doors.entity.MixedBlockTileEntity;
 import net.malisis.doors.item.MixedBlockBlockItem;

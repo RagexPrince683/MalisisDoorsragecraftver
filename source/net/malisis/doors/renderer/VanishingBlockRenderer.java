@@ -26,11 +26,11 @@ package net.malisis.doors.renderer;
 
 import java.util.Random;
 
-import net.malisis.core.renderer.MalisisRenderer;
-import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.RenderType;
-import net.malisis.core.renderer.element.Shape;
-import net.malisis.core.renderer.element.shape.Cube;
+import net.malisis.doors.internal.renderer.MalisisRenderer;
+import net.malisis.doors.internal.renderer.RenderParameters;
+import net.malisis.doors.internal.renderer.RenderType;
+import net.malisis.doors.internal.renderer.element.Shape;
+import net.malisis.doors.internal.renderer.element.shape.Cube;
 import net.malisis.doors.MalisisDoorsSettings;
 import net.malisis.doors.ProxyAccess;
 import net.malisis.doors.block.VanishingBlock;

@@ -1,10 +1,10 @@
 package net.malisis.doors.entity;
 
-import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.inventory.IInventoryProvider;
-import net.malisis.core.inventory.MalisisInventory;
-import net.malisis.core.inventory.MalisisInventoryContainer;
-import net.malisis.core.inventory.MalisisSlot;
+import net.malisis.doors.internal.client.gui.MalisisGui;
+import net.malisis.doors.internal.inventory.IInventoryProvider;
+import net.malisis.doors.internal.inventory.MalisisInventory;
+import net.malisis.doors.internal.inventory.MalisisInventoryContainer;
+import net.malisis.doors.internal.inventory.MalisisSlot;
 import net.malisis.doors.gui.BlockMixerGui;
 import net.malisis.doors.item.MixedBlockBlockItem;
 import net.minecraft.item.ItemStack;
