@@ -1,3 +1,19 @@
+# Modernize the Forge 1.7.10 development build
+
+## Changed
+
+- Replaced ForgeGradle 1.2 and Gradle 4.5 with the GTNH convention plugins,
+  RetroFuturaGradle, and Gradle 8.11.1.
+- Configured Java 8, Forge 10.13.4.1614, stable 12 mappings, and the existing
+  `source/` and `resources/` project layout.
+- Replaced the legacy ChickenBones runtime with the GTNH CodeChickenCore and Not
+  Enough Items development artifacts.
+- Added separate support for remapped production development mods in `devmods/`
+  and direct MCP development jars in `devmods/deobf/`.
+- Migrated version token and `mcmod.info` expansion to the GTNH convention and
+  modern Gradle resource processing.
+- Removed obsolete CurseForge and Maven upload configuration.
+
 # Fix Forge and NEI development environment
 
 ## Fixed
