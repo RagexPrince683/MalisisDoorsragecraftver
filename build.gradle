@@ -40,9 +40,31 @@ sourceSets
 	}
 }
 
+repositories {
+	maven {
+		name = "ChickenBonesMirror"
+		url = "https://maven.cil.li/"
+	}
+}
+
+def localDevMods = fileTree(dir: 'devmods', include: ['*.jar'])
+
 dependencies
 {
 	compile 'org.projectlombok:lombok:1.14.8'
+
+	// Development-only mods. Gradle puts these on the compile and run classpaths,
+	// while the standard Jar task continues to package only this project's output.
+	compile localDevMods
+	runtime localDevMods
+
+	compile 'codechicken:NotEnoughItems:1.7.10-1.0.5.120:dev'
+	compile 'codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev'
+	compile 'codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev'
+
+	runtime 'codechicken:NotEnoughItems:1.7.10-1.0.5.120:dev'
+	runtime 'codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev'
+	runtime 'codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev'
 }
 
 // because the normal output has been made to be obfuscated

@@ -25,3 +25,11 @@ replacements belong under `net.malisis.doors.renderer` and
 `net.malisis.doors.util`. These boundaries are intended to keep future Angelica
 compatibility fixes local and avoid assumptions about a third-party renderer's GL
 state.
+
+## Local development mods
+
+The development environment loads classic Not Enough Items, CodeChickenCore, and
+CodeChickenLib development artifacts automatically. You can add other local mod
+dependencies by placing their JAR files in `devmods/`; no Gradle entry is needed for
+each file. These local JARs are available to compilation and development runs, are
+ignored by Git, and are not included in the MalisisDoors output JAR.
