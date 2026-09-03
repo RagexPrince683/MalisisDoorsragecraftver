@@ -132,7 +132,10 @@ public class ReplacementTool
 			f.set(null, replacement);
 
 			if (ib != null)
-				AsmUtils.changeFieldAccess(ItemBlock.class, "blockInstance", "field_150939_a").set(ib, replacement);
+			{
+				Field itemBlockField = AsmUtils.changeFieldAccess(ItemBlock.class, "field_150939_a", "field_150939_a");
+				itemBlockField.set(ib, replacement);
+			}
 
 			map.put(replacement, vanilla);
 			replaceIn(CraftingManager.getInstance().getRecipeList(), vanilla, replacement);

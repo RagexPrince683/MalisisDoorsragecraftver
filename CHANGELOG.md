@@ -1,3 +1,14 @@
+# Fix vanilla block replacement startup crash
+
+## Fixed
+
+- Resolved required reflected fields by trying both their environment-specific
+  and alternate supplied names, with descriptive immediate failures when neither
+  name exists.
+- Updated vanilla block replacement to use the `field_150939_a` name exposed by
+  the local Forge 1.7.10 `ItemBlock` source and retained the required item-block
+  reference update.
+
 # Fix final Forge 1.7.10 input compatibility errors
 
 ## Fixed
