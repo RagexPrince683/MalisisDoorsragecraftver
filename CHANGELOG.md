@@ -1,3 +1,14 @@
+# Fix local development mod dependencies
+
+## Fixed
+
+- Removed the unavailable remote CodeChicken development artifact dependencies
+  and their now-unused Maven repository.
+- Kept all JARs placed directly in `devmods` on the compile and development client
+  classpaths without packaging them in the MalisisDoors release JAR.
+- Clarified that contributors must supply classic NEI, CodeChickenCore,
+  CodeChickenLib, and other development mods locally through `devmods`.
+
 # Add Forge 1.7.10 development mod dependencies
 
 ## Changed
