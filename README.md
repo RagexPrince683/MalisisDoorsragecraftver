@@ -28,8 +28,8 @@ state.
 
 ## Local development mods
 
-The development environment loads classic Not Enough Items, CodeChickenCore, and
-CodeChickenLib development artifacts automatically. You can add other local mod
-dependencies by placing their JAR files in `devmods/`; no Gradle entry is needed for
-each file. These local JARs are available to compilation and development runs, are
-ignored by Git, and are not included in the MalisisDoors output JAR.
+Place classic Not Enough Items, CodeChickenCore, CodeChickenLib, MalisisCore, and
+any other development mod JARs directly in `devmods/`. Every `devmods/*.jar` is
+available to compilation and development runs, so no per-file Gradle entry or exact
+file name is required. These local JARs are ignored by Git and are not included in
+the MalisisDoors output JAR.
