@@ -1,3 +1,14 @@
+# Fix stable_12 Java source compatibility
+
+## Fixed
+
+- Updated MalisisDoors block, item, tile-entity, inventory, rendering, sound,
+  packet, and proxy-world calls to the Minecraft 1.7.10 Forge stable 12 API.
+- Corrected the malformed anonymous rusty-handle item method declaration.
+- Preserved item metadata, forcefield energy, curtain dye naming, inventory
+  lifecycle, packet NBT, and vanishing-block proxy behavior while using the
+  members exposed by the current workspace.
+
 # Fix GTNH project layout
 
 ## Changed

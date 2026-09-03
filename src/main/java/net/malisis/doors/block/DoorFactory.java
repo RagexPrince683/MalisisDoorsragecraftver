@@ -57,13 +57,13 @@ public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 	{
 		super(Material.iron);
 		setCreativeTab(MalisisDoors.tab);
-		setUnlocalizedName("door_factory");
+		setBlockName("door_factory");
 		setHardness(3.0F);
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister)
+	public void registerBlockIcons(IIconRegister iconRegister)
 	{
 		this.blockIcon = iconRegister.registerIcon(MalisisDoors.modid + ":" + name + "_side");
 		this.frontIcon = iconRegister.registerIcon(MalisisDoors.modid + ":" + name);

@@ -453,7 +453,7 @@ public class MalisisInventory implements IInventory
 	 * Called when this {@link MalisisInventory} is opened.
 	 */
 	@Override
-	public void openChest()
+	public void openInventory()
 	{}
 
 	/**
@@ -657,7 +657,7 @@ public class MalisisInventory implements IInventory
 			for (MalisisInventory inv : inventories)
 			{
 				c.addInventory(inv);
-				inv.openChest();
+				inv.openInventory();
 				inv.bus.post(new InventoryEvent.Open(c, inv));
 			}
 
@@ -688,7 +688,7 @@ public class MalisisInventory implements IInventory
 			for (MalisisInventory inv : inventories)
 			{
 				c.addInventory(inv);
-				inv.openChest();
+				inv.openInventory();
 				inv.bus.post(new InventoryEvent.Open(c, inv));
 			}
 
@@ -720,7 +720,7 @@ public class MalisisInventory implements IInventory
 	 * Unused.
 	 */
 	@Override
-	public void closeChest()
+	public void closeInventory()
 	{}
 
 	/**

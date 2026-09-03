@@ -46,7 +46,7 @@ public class SaloonDoorBlock extends Door
 	}
 
 	@Override
-	public void registerIcons(IIconRegister register)
+	public void registerBlockIcons(IIconRegister register)
 	{
 		blockIcon = register.registerIcon(MalisisDoors.modid + ":saloon_door");
 	}

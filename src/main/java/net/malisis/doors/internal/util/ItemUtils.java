@@ -214,7 +214,7 @@ public class ItemUtils
 	public static boolean areItemStacksStackable(ItemStack stack1, ItemStack stack2)
 	{
 		return !(stack1 == null || stack2 == null) && stack1.isStackable() && stack1.getItem() == stack2.getItem()
-				&& (!stack2.getHasSubtypes() || stack2.getMetadata() == stack1.getMetadata())
+				&& (!stack2.getHasSubtypes() || stack2.getItemDamage() == stack1.getItemDamage())
 				&& ItemStack.areItemStackTagsEqual(stack2, stack1);
 	}
 
@@ -227,7 +227,7 @@ public class ItemUtils
 		if (block == null)
 			return null;
 
-		return new BlockState(block, itemStack.getItem().getMetadata(itemStack.getMetadata()));
+		return new BlockState(block, itemStack.getItem().getMetadata(itemStack.getItemDamage()));
 	}
 
 	public static ItemStack getItemStackFromState(BlockState state)

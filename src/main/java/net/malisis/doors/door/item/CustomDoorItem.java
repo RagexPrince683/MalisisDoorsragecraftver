@@ -109,25 +109,25 @@ public class CustomDoorItem extends DoorItem
 
 		//frame
 		Block frameBlock = Block.getBlockFromItem(frameItemStack.getItem());
-		int frameMetadata = ((ItemBlock) frameItemStack.getItem()).getMetadata(frameItemStack.getMetadata());
+		int frameMetadata = ((ItemBlock) frameItemStack.getItem()).getMetadata(frameItemStack.getItemDamage());
 
 		//top material
 		Block topMaterialBlock = itemsAllowed.get(topMaterialItemStack.getItem());
 		if (topMaterialBlock == null)
 			topMaterialBlock = Block.getBlockFromItem(topMaterialItemStack.getItem());
 
-		int topMaterialMetadata = topMaterialItemStack.getMetadata();
+		int topMaterialMetadata = topMaterialItemStack.getItemDamage();
 		if (topMaterialItemStack.getItem() instanceof ItemBlock)
-			topMaterialMetadata = ((ItemBlock) topMaterialItemStack.getItem()).getMetadata(topMaterialItemStack.getMetadata());
+			topMaterialMetadata = ((ItemBlock) topMaterialItemStack.getItem()).getMetadata(topMaterialItemStack.getItemDamage());
 
 		//bottom material
 		Block bottomMaterialBlock = itemsAllowed.get(bottomMaterialItemStack.getItem());
 		if (bottomMaterialBlock == null)
 			bottomMaterialBlock = Block.getBlockFromItem(bottomMaterialItemStack.getItem());
 
-		int bottomMaterialMetadata = bottomMaterialItemStack.getMetadata();
+		int bottomMaterialMetadata = bottomMaterialItemStack.getItemDamage();
 		if (bottomMaterialItemStack.getItem() instanceof ItemBlock)
-			bottomMaterialMetadata = ((ItemBlock) bottomMaterialItemStack.getItem()).getMetadata(bottomMaterialItemStack.getMetadata());
+			bottomMaterialMetadata = ((ItemBlock) bottomMaterialItemStack.getItem()).getMetadata(bottomMaterialItemStack.getItemDamage());
 
 		//NBT
 		NBTTagCompound nbt = new NBTTagCompound();

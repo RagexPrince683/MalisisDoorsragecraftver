@@ -25,12 +25,12 @@ public class PlayerSensor extends Block
 	{
 		super(Material.circuits);
 		setCreativeTab(MalisisDoors.tab);
-		setUnlocalizedName("player_sensor");
+		setBlockName("player_sensor");
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister)
+	public void registerBlockIcons(IIconRegister iconRegister)
 	{
 		this.blockIcon = iconRegister.registerIcon(MalisisDoors.modid + ":" + (this.getUnlocalizedName().substring(5)));
 	}

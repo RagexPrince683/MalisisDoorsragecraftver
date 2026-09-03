@@ -257,7 +257,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	 */
 	public void set(TileEntity te, float partialTick)
 	{
-		set(te.getWorld(), te.getBlockType(), te.xCoord, te.yCoord, te.zCoord, te.getBlockMetadata());
+		set(te.getWorldObj(), te.getBlockType(), te.xCoord, te.yCoord, te.zCoord, te.getBlockMetadata());
 		this.partialTick = partialTick;
 		this.tileEntity = te;
 	}

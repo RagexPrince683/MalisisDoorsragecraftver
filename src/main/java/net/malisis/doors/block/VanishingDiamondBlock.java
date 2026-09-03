@@ -48,7 +48,7 @@ public class VanishingDiamondBlock extends VanishingBlock
 	public VanishingDiamondBlock()
 	{
 		super();
-		setUnlocalizedName("vanishing_block_diamond");
+		setBlockName("vanishing_block_diamond");
 	}
 
 	@Override

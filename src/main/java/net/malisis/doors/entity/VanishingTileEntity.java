@@ -68,7 +68,7 @@ public class VanishingTileEntity extends TileEntity
 	public VanishingTileEntity()
 	{
 		this.frameType = VanishingBlock.typeWoodFrame;
-		ProxyAccess.get(getWorld());
+		ProxyAccess.get(getWorldObj());
 	}
 
 	public VanishingTileEntity(int frameType)
@@ -83,7 +83,7 @@ public class VanishingTileEntity extends TileEntity
 	{
 		worldObj = world;
 		if (copiedTileEntity != null)
-			copiedTileEntity.setWorldObj(((World) ProxyAccess.get(getWorld())));
+			copiedTileEntity.setWorldObj(((World) ProxyAccess.get(getWorldObj())));
 	}
 
 	public int getDuration()
@@ -105,9 +105,9 @@ public class VanishingTileEntity extends TileEntity
 		if (ArrayUtils.contains(excludes, block))
 			return false;
 
-		World proxy = (World) ProxyAccess.get(getWorld());
+		World proxy = (World) ProxyAccess.get(getWorldObj());
 		copiedBlock = block;
-		copiedMetadata = itemStack.getMetadata();
+		copiedMetadata = itemStack.getItemDamage();
 		initCopiedTileEntity();
 		copiedMetadata = block.onBlockPlaced(proxy, xCoord, yCoord, zCoord, side, hitX, hitY, hitZ, copiedMetadata);
 		if (p != null)
@@ -117,10 +117,10 @@ public class VanishingTileEntity extends TileEntity
 
 	private void initCopiedTileEntity()
 	{
-		copiedTileEntity = copiedBlock.createTileEntity(getWorld(), copiedMetadata);
+		copiedTileEntity = copiedBlock.createTileEntity(getWorldObj(), copiedMetadata);
 		if (copiedTileEntity != null)
 		{
-			copiedTileEntity.setWorldObj((World) ProxyAccess.get(getWorld()));
+			copiedTileEntity.setWorldObj((World) ProxyAccess.get(getWorldObj()));
 			copiedTileEntity.xCoord = xCoord;
 			copiedTileEntity.yCoord = yCoord;
 			copiedTileEntity.zCoord = zCoord;
@@ -252,7 +252,7 @@ public class VanishingTileEntity extends TileEntity
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
 	{
-		this.readFromNBT(packet.getNbtCompound());
+		this.readFromNBT(packet.func_148857_g());
 	}
 
 }

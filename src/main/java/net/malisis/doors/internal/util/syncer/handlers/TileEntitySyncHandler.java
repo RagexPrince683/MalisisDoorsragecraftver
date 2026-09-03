@@ -61,7 +61,7 @@ public class TileEntitySyncHandler extends DefaultSyncHandler<TileEntity, TESync
 	public void send(TileEntity caller, Packet packet)
 	{
 		InternalSupport.network.sendToPlayersWatchingChunk(packet,
-				caller.getWorld().getChunkFromChunkCoords(caller.xCoord >> 4, caller.zCoord >> 4));
+				caller.getWorldObj().getChunkFromChunkCoords(caller.xCoord >> 4, caller.zCoord >> 4));
 	}
 
 	public static class TESyncData implements ISyncableData

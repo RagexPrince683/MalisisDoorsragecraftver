@@ -98,8 +98,8 @@ public class Door extends BlockDoor implements ITileEntityProvider, IBoundingBox
 
 		setHardness(desc.getHardness());
 		setStepSound(desc.getSoundType());
-		setUnlocalizedName(desc.getName());
-		setTextureName(desc.getTextureName());
+		setBlockName(desc.getName());
+		setBlockTextureName(desc.getTextureName());
 	}
 
 	public Door(Material material)
@@ -115,7 +115,7 @@ public class Door extends BlockDoor implements ITileEntityProvider, IBoundingBox
 	// #region Icons
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister register)
+	public void registerBlockIcons(IIconRegister register)
 	{
 		String textureName = getTextureName();
 		MalisisIcon top = new MalisisIcon(textureName + "_upper").register((TextureMap) register);

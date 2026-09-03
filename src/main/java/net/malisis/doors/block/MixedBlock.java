@@ -58,11 +58,11 @@ public class MixedBlock extends Block implements ITileEntityProvider
 	{
 		super(Material.rock);
 		setHardness(0.7F);
-		setUnlocalizedName("mixed_block");
+		setBlockName("mixed_block");
 	}
 
 	@Override
-	public void registerIcons(IIconRegister p_149651_1_)
+	public void registerBlockIcons(IIconRegister p_149651_1_)
 	{}
 
 	@Override
