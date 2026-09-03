@@ -76,15 +76,16 @@ artifacts {
 }
 
 minecraft {
-	version = "1.7.10-10.13.2.1342-1.7.10"
-	if(file("../../run").exists()) 	{
-		runDir = "../../run/assets"
-	}
-	else {
-		runDir = "assets"
-	}
-	
-	replace '${version}', project.version
+    version = "1.7.10-10.13.4.1614-1.7.10"
+
+    if(file("../../run").exists()) {
+        runDir = "../../run/assets"
+    }
+    else {
+        runDir = "assets"
+    }
+
+    replace '${version}', project.version
     replaceIn "MalisisDoors.java"
     mappings = "stable_12"
 }

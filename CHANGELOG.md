@@ -1,3 +1,12 @@
+# Fix Forge and NEI development environment
+
+## Fixed
+
+- Updated the Minecraft 1.7.10 development environment to Forge 10.13.4.1614
+  so the legacy NotEnoughItems transformer targets the expected Forge classes.
+- Preserved stable 12 mappings and the existing ChickenBones development
+  dependency stack for CodeChickenLib, CodeChickenCore, and NotEnoughItems.
+
 # Restore legacy NotEnoughItems development dependencies
 
 ## Changed
