@@ -28,6 +28,7 @@ import java.util.WeakHashMap;
 
 import lombok.experimental.Delegate;
 import cpw.mods.fml.common.FMLLog;
+import net.minecraft.entity.Entity;
 import org.apache.logging.log4j.Level;
 import net.malisis.doors.entity.VanishingTileEntity;
 import net.minecraft.block.Block;
@@ -261,6 +262,11 @@ public class ProxyAccess
 		protected int func_152379_p()
 		{
 			return 0;
+		}
+
+		@Override
+		public Entity getEntityByID(int p_73045_1_) {
+			return null;
 		}
 
 	}
