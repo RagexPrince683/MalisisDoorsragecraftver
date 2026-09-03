@@ -1,6 +1,9 @@
 package net.malisis.doors;
 
 import net.malisis.doors.internal.renderer.font.MalisisFont;
+import net.malisis.doors.internal.InternalSupport;
+import net.malisis.doors.internal.util.chunkblock.ChunkBlockHandler;
+import net.malisis.doors.internal.util.replacement.ReplacementTool;
 import net.malisis.doors.block.BlockMixer;
 import net.malisis.doors.block.DoorFactory;
 import net.malisis.doors.block.GarageDoor;
@@ -29,6 +32,7 @@ import net.malisis.doors.network.DoorFactoryMessage;
 import net.malisis.doors.network.VanishingDiamondFrameMessage;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = MalisisDoors.modid, name = MalisisDoors.modname, version = MalisisDoors.version)
 public class MalisisDoors
@@ -60,6 +64,12 @@ public class MalisisDoors
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		settings = new MalisisDoorsSettings(event.getSuggestedConfigurationFile());
+
+		// These support objects used to be registered by MalisisCore. They remain
+		// required by large-block persistence and vanilla replacement textures.
+		MinecraftForge.EVENT_BUS.register(ChunkBlockHandler.get());
+		MinecraftForge.EVENT_BUS.register(ReplacementTool.instance());
+		InternalSupport.log.info("Registered standalone chunk persistence, chunk synchronization, and replacement texture support");
 
 		Registers.init();
 

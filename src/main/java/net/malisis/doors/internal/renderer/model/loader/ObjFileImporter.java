@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -87,7 +87,7 @@ public class ObjFileImporter implements IModelLoader
 	protected List<Face> faces = new ArrayList<>();
 
 	/** Map of the {@link Shape shapes} used for the {@link MalisisModel}. */
-	protected Map<String, Shape> shapes = new HashMap<>();
+	protected Map<String, Shape> shapes = new LinkedHashMap<>();
 
 	/**
 	 * Instantiates a new {@link ObjFileImporter} from a {@link ResourceLocation}.
@@ -353,12 +353,20 @@ public class ObjFileImporter implements IModelLoader
 		if (faces.size() != 0)
 		{
 			Shape s = new Shape(faces);
-			shapes.put(currentShape.toLowerCase(), s);
+			String shapeName = currentShape.toLowerCase();
+			Shape existingShape = shapes.get(shapeName);
+			if (existingShape == null)
+				shapes.put(shapeName, s);
+			else
+				existingShape.addFaces(s.getFaces());
 			faces.clear();
 		}
 
-		if (data != "" && data.indexOf('_') != -1)
-			currentShape = data.substring(0, data.indexOf('_'));
+		if (!data.isEmpty())
+		{
+			int separator = data.indexOf('_');
+			currentShape = separator >= 0 ? data.substring(0, separator) : data;
+		}
 	}
 
 	/**

@@ -10,6 +10,7 @@ import net.malisis.doors.internal.inventory.message.InventoryActionMessage;
 import net.malisis.doors.internal.inventory.message.OpenInventoryMessage;
 import net.malisis.doors.internal.inventory.message.UpdateInventorySlotsMessage;
 import net.malisis.doors.internal.network.MalisisNetwork;
+import net.malisis.doors.internal.util.chunkblock.ChunkBlockMessage;
 import net.minecraft.launchwrapper.Launch;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,7 @@ public final class InternalSupport
         new InventoryActionMessage();
         new OpenInventoryMessage();
         new UpdateInventorySlotsMessage();
+        new ChunkBlockMessage();
     }
 
     private InternalSupport()

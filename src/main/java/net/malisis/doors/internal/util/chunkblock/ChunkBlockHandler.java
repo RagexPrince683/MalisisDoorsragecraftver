@@ -103,6 +103,20 @@ public class ChunkBlockHandler implements IChunkBlockHandler
 
 	//#region updateCoordinates
 	/**
+	 * Entry point injected immediately before Chunk#setBlockIDWithMetadata writes
+	 * to ExtendedBlockStorage. The coordinates passed by Chunk are local X/Z,
+	 * so they are converted here instead of relying on temporary local slots in
+	 * Minecraft bytecode.
+	 */
+	public static boolean beforeSetBlock(Chunk chunk, int localX, int y, int localZ, Block block)
+	{
+		Block oldBlock = chunk.getBlock(localX, y, localZ);
+		int worldX = (chunk.xPosition << 4) + localX;
+		int worldZ = (chunk.zPosition << 4) + localZ;
+		return get().updateCoordinates(chunk, worldX, y, worldZ, oldBlock, block);
+	}
+
+	/**
 	 * Update chunk coordinates.<br>
 	 * Called via ASM from {@link Chunk#setBlockIDWithMetadata(int, int, int, Block, int)} Notifies all {@link IBlockListener} for that
 	 * chunk.<br>

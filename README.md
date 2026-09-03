@@ -41,3 +41,25 @@ Place production, SRG-named optional mod JARs directly in `devmods/`; the
 `prepareDevMods` task remaps them for the MCP workspace. Place MCP development
 JARs in `devmods/deobf/` to load them directly. Both locations are ignored by Git,
 and their contents are not included in the MalisisDoors output JAR.
+# Standalone runtime architecture
+
+MalisisDoors includes only the portions of MalisisCore that its 1.7.10 gameplay
+uses. The runtime dependency path is:
+
+```text
+door block -> tile entity -> movement -> renderer -> OBJ/texture resource
+           -> collision -> chunk coordinate tracking -> persistence/network
+           -> Forge event registration -> minimal Minecraft ASM hooks
+```
+
+Large Carriage and Medieval doors implement both chunk collision and block
+listener contracts. `MalisisDoorsCorePlugin` installs the World collision and
+ray-trace, ItemBlock placement, server digging reach, and Chunk block-change
+hooks needed by those contracts. `MalisisDoors.preInit` registers the chunk data
+and vanilla replacement event handlers. Forcefield Door and Rusty Hatch use the
+standalone multiblock implementation and their own tile entities for ownership
+and NBT persistence.
+
+The internal Syncer source remains for source compatibility, but no current
+MalisisDoors gameplay class is annotated with `@Syncable`; active doors use their
+existing tile-entity description packets and explicit gameplay messages.
