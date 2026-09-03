@@ -1,3 +1,14 @@
+# Restore legacy NotEnoughItems development dependencies
+
+## Changed
+
+- Restored the ChickenBones Maven repository used by the ForgeGradle 1.2
+  development environment.
+- Added the legacy Minecraft 1.7.10 CodeChickenLib, CodeChickenCore, and Not
+  Enough Items development artifacts as runtime dependencies.
+- Kept optional local development JARs available through `devmods` without
+  packaging them into the MalisisDoors release JAR.
+
 # Fix local development mod dependencies
 
 ## Fixed

@@ -40,6 +40,13 @@ sourceSets
 	}
 }
 
+repositories {
+	maven {
+		name = "chickenbones"
+		url = "http://chickenbones.net/maven/"
+	}
+}
+
 def localDevMods = fileTree(dir: 'devmods', include: ['*.jar'])
 
 dependencies
@@ -50,6 +57,10 @@ dependencies
 	// declaration supplies local mods to compilation and development runs. The
 	// standard Jar task still packages only this project's output.
 	compile localDevMods
+
+	runtime "codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev"
+	runtime "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
+	runtime "codechicken:NotEnoughItems:1.7.10-1.0.5.120:dev"
 }
 
 // because the normal output has been made to be obfuscated
