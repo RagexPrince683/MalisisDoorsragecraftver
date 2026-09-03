@@ -855,7 +855,7 @@ public abstract class MalisisGui extends GuiScreen
 	public static void playSound(String name, float level)
 	{
 		Minecraft.getMinecraft().getSoundHandler()
-				.playSound(PositionedSoundRecord.createPositionedSoundRecord(new ResourceLocation(name), level));
+				.playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation(name), level));
 	}
 
 	public static boolean isGuiCloseKey(int keyCode)

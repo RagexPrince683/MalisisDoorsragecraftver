@@ -90,7 +90,7 @@ public class ReplacementTool
 		for (Entry<Block, Block> entry : originalBlocks.entrySet())
 		{
 			Block block = entry.getValue();
-			block.registerIcons(event.map);
+			block.registerBlockIcons(event.map);
 		}
 	}
 

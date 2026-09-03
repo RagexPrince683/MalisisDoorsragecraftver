@@ -168,7 +168,7 @@ public class DoorFactoryTileEntity extends TileEntity implements IInventoryProvi
 
 	public void createDoor()
 	{
-		if (getWorld().isRemote)
+		if (getWorldObj().isRemote)
 			return;
 
 		if (!canCreateDoor())
@@ -306,7 +306,7 @@ public class DoorFactoryTileEntity extends TileEntity implements IInventoryProvi
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
 	{
-		this.readFromNBT(packet.getNbtCompound());
+		this.readFromNBT(packet.func_148857_g());
 		TileEntityUtils.updateGui(this);
 	}
 

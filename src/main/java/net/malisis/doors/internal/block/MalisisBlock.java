@@ -57,10 +57,10 @@ public class MalisisBlock extends Block implements IBoundingBox
 	}
 
 	@Override
-	public Block setUnlocalizedName(String name)
+	public Block setBlockName(String name)
 	{
 		this.name = name;
-		super.setUnlocalizedName(name);
+		super.setBlockName(name);
 		return this;
 	}
 
@@ -80,12 +80,12 @@ public class MalisisBlock extends Block implements IBoundingBox
 	}
 
 	@Override
-	public void registerIcons(IIconRegister reg)
+	public void registerBlockIcons(IIconRegister reg)
 	{
 		if (textureName == null)
 			return;
 
-		super.registerIcons(reg);
+		super.registerBlockIcons(reg);
 	}
 
 	@Override

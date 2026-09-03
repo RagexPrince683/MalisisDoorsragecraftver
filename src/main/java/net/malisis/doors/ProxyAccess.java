@@ -258,7 +258,7 @@ public class ProxyAccess
 		{}
 
 		@Override
-		protected int getRenderDistanceChunks()
+		protected int func_152379_p()
 		{
 			return 0;
 		}

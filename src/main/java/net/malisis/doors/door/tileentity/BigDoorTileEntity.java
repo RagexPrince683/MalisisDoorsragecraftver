@@ -103,34 +103,34 @@ public class BigDoorTileEntity extends DoorTileEntity
 	{
 		boolean moving = this.moving;
 		BlockState state = null;
-		if (getWorld() != null)
+		if (getWorldObj() != null)
 		{
 			state = new BlockState(xCoord, yCoord, zCoord, getBlockType());
-			ChunkCollision.get().updateBlocks(getWorld(), state);
+			ChunkCollision.get().updateBlocks(getWorldObj(), state);
 		}
 
 		super.setDoorState(newState);
-		if (getWorld() != null && moving && !this.moving)
-			ChunkCollision.get().replaceBlocks(getWorld(), state);
+		if (getWorldObj() != null && moving && !this.moving)
+			ChunkCollision.get().replaceBlocks(getWorldObj(), state);
 
 	}
 
 	@Override
 	public void updateEntity()
 	{
-		if (!processed && getWorld() != null)
+		if (!processed && getWorldObj() != null)
 		{
 			if (delete)
 			{
 				InternalSupport.log.info("Deleting " + xCoord + "," + yCoord + "," + zCoord);
-				getWorld().setBlockToAir(xCoord, yCoord, zCoord);
+				getWorldObj().setBlockToAir(xCoord, yCoord, zCoord);
 			}
 			else
 			{
 				InternalSupport.log.info("Adding to chunk : " + xCoord + "," + yCoord + "," + zCoord);
-				ChunkBlockHandler.get().updateCoordinates(getWorld().getChunkFromBlockCoords(xCoord, zCoord), xCoord, yCoord, zCoord,
+				ChunkBlockHandler.get().updateCoordinates(getWorldObj().getChunkFromBlockCoords(xCoord, zCoord), xCoord, yCoord, zCoord,
 						Blocks.air, getBlockType());
-				getWorld().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, Door.dirToInt(direction), 2);
+				getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, Door.dirToInt(direction), 2);
 				processed = true;
 			}
 			return;
@@ -173,7 +173,7 @@ public class BigDoorTileEntity extends DoorTileEntity
 	@Override
 	public AxisAlignedBB getRenderBoundingBox()
 	{
-		return ((BigDoor) getBlockType()).getBoundingBox(getWorld(), xCoord, yCoord, zCoord, BoundingBoxType.RENDER)[0].offset(xCoord,
+		return ((BigDoor) getBlockType()).getBoundingBox(getWorldObj(), xCoord, yCoord, zCoord, BoundingBoxType.RENDER)[0].offset(xCoord,
 				yCoord, zCoord);
 	}
 

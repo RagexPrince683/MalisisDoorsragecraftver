@@ -64,7 +64,7 @@ public class MinecraftFont extends MalisisFont
 		this.textureRl = new ResourceLocation("textures/font/ascii.png");
 		this.size = 256;
 
-		fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+		fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		setFields();
 	}
 

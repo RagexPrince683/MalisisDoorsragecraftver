@@ -57,14 +57,14 @@ public class GarageDoor extends Block implements ITileEntityProvider
 	public GarageDoor()
 	{
 		super(Material.wood);
-		setUnlocalizedName("garage_door");
+		setBlockName("garage_door");
 		setCreativeTab(MalisisDoors.tab);
 		setHardness(2.0F);
 		setStepSound(soundTypeWood);
 	}
 
 	@Override
-	public void registerIcons(IIconRegister iconRegister)
+	public void registerBlockIcons(IIconRegister iconRegister)
 	{
 		this.blockIcon = iconRegister.registerIcon(MalisisDoors.modid + ":" + (this.getUnlocalizedName().substring(5)));
 		this.topBlockIcon = iconRegister.registerIcon(MalisisDoors.modid + ":" + (this.getUnlocalizedName().substring(5)) + "_top");

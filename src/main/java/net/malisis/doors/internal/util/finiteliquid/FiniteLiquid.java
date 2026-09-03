@@ -75,13 +75,13 @@ public abstract class FiniteLiquid extends BlockDynamicLiquid
 	}
 
 	@Override
-	public Block setUnlocalizedName(String name)
+	public Block setBlockName(String name)
 	{
 		this.name = name;
 		if (textureName == null)
 			textureName = name;
-		super.setTextureName(name);
-		super.setUnlocalizedName(name);
+		super.setBlockTextureName(name);
+		super.setBlockName(name);
 		return this;
 	}
 

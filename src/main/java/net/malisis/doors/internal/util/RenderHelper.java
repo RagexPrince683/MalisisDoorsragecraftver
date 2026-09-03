@@ -68,7 +68,7 @@ public class RenderHelper
 
 	public static int getStringWidth(String text)
 	{
-		return getMC().fontRendererObj.getStringWidth(text);
+		return getMC().fontRenderer.getStringWidth(text);
 	}
 
 	public static String getLongestString(String... strings)
@@ -95,7 +95,7 @@ public class RenderHelper
 
 	public static void drawString(String text, int x, int y, int z, int canvasWidth, int canvasHeight, int color, boolean drawShadow)
 	{
-		drawString(text, x + (canvasWidth - getStringWidth(text)) / 2, y + (canvasHeight - getMC().fontRendererObj.FONT_HEIGHT) / 2, z,
+		drawString(text, x + (canvasWidth - getStringWidth(text)) / 2, y + (canvasHeight - getMC().fontRenderer.FONT_HEIGHT) / 2, z,
 				color, drawShadow);
 	}
 
@@ -104,7 +104,7 @@ public class RenderHelper
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glTranslatef(0, 0, z);
-		getMC().fontRendererObj.drawString(text, x, y, color, drawShadow);
+		getMC().fontRenderer.drawString(text, x, y, color, drawShadow);
 		GL11.glTranslatef(0, 0, -z);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -115,7 +115,7 @@ public class RenderHelper
 		String[] splits = text.split("<br>");
 		for (int i = 0; i < splits.length; i++)
 		{
-			getMC().fontRendererObj.drawString(splits[i], x, y + i * 10, color, drawShadow);
+			getMC().fontRenderer.drawString(splits[i], x, y + i * 10, color, drawShadow);
 		}
 	}
 

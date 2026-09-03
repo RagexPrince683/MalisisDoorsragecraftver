@@ -484,7 +484,7 @@ public class GuiRenderer extends MalisisRenderer
 
 		FontRenderer fontRenderer = itemStack.getItem().getFontRenderer(itemStack);
 		if (fontRenderer == null)
-			fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+			fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
 		if (label == null && (itemStack.stackSize > 1 || format != null))
 			label = Integer.toString(itemStack.stackSize);
