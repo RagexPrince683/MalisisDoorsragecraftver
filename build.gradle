@@ -10,13 +10,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-sourceSets {
-    main {
-        java.srcDirs = ['source']
-        resources.srcDirs = ['resources']
-    }
-}
-
 def productionDevMods = fileTree('devmods') { include '*.jar' }
 def mcpDevMods = fileTree('devmods/deobf') { include '*.jar' }
 def remappedDevModsDir = layout.buildDirectory.dir('devmods/remapped')

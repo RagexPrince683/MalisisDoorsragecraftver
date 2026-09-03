@@ -1,3 +1,15 @@
+# Fix GTNH project layout
+
+## Changed
+
+- Moved all Java sources and resources into the standard Gradle
+  `src/main/java/` and `src/main/resources/` directories required by the GTNH
+  convention structure checker.
+- Removed the obsolete custom source-set redirects for the former top-level
+  `source/` and `resources/` directories.
+- Replaced deprecated in-place version token substitution with the GTNH-generated
+  `net.malisis.doors.Tags` class.
+
 # Modernize the Forge 1.7.10 development build
 
 ## Changed

@@ -32,6 +32,11 @@ The Gradle 8.11.1 GTNH/RetroFuturaGradle development environment uses Minecraft
 1.7.10, Forge 10.13.4.1614, and stable 12 mappings. It supplies the GTNH builds of
 Not Enough Items and CodeChickenCore for development runs.
 
+Java sources use the standard Gradle `src/main/java/` directory, and mod assets
+and metadata use `src/main/resources/`. The GTNH convention generates
+`net.malisis.doors.Tags` during the build so Java code can read the project
+version without editing tracked source files.
+
 Place production, SRG-named optional mod JARs directly in `devmods/`; the
 `prepareDevMods` task remaps them for the MCP workspace. Place MCP development
 JARs in `devmods/deobf/` to load them directly. Both locations are ignored by Git,
