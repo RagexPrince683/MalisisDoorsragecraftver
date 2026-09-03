@@ -872,7 +872,6 @@ public class MalisisInventoryContainer extends Container
 	/**
 	 * Resets the dragging state.
 	 */
-	@Override
 	protected void resetDrag()
 	{
 		if (!isDraggingItemStack())
@@ -888,6 +887,12 @@ public class MalisisInventoryContainer extends Container
 		draggedAmount = 0;
 
 		dragType = -1;
+	}
+
+	@Override
+	protected void func_94533_d()
+	{
+		resetDrag();
 	}
 
 	/*

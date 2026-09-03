@@ -447,7 +447,7 @@ public abstract class MalisisGui extends GuiScreen
 	 * Called when a mouse button is released.
 	 */
 	@Override
-	protected void mouseReleased(int x, int y, int button)
+	protected void mouseMovedOrUp(int x, int y, int button)
 	{
 		try
 		{

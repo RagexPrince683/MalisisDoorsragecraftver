@@ -1,3 +1,14 @@
+# Fix final Forge 1.7.10 input compatibility errors
+
+## Fixed
+
+- Added the SRG-named Minecraft 1.7.10 container drag-reset bridge while keeping
+  the readable internal drag helper and its existing behavior.
+- Corrected the GUI mouse-release override to the Minecraft 1.7.10
+  `GuiScreen.mouseMovedOrUp()` signature.
+- Restored Lombok compile-time delegation support for block-access and world
+  proxies.
+
 # Fix remaining stable_12 Java compilation errors
 
 ## Fixed
