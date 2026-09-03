@@ -14,3 +14,4 @@ init.gradle
 /libs
 /devmods/*
 !/devmods/.gitkeep
+/assets/
