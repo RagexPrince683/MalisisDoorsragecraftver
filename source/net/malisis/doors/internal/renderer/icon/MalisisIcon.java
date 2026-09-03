@@ -24,11 +24,13 @@
 
 package net.malisis.doors.internal.renderer.icon;
 
+import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.util.IIcon;
 
 /**
@@ -48,6 +50,18 @@ public class MalisisIcon extends TextureAtlasSprite
 	 * Height of the global texture sheet.
 	 */
 	protected int sheetHeight;
+	/**
+	 * Raw texture coordinates. TextureAtlasSprite keeps its corresponding fields private,
+	 * so operations performed by this class must maintain their own writable state.
+	 */
+	protected float rawMinU;
+	protected float rawMaxU;
+	protected float rawMinV;
+	protected float rawMaxV;
+	/**
+	 * Whether the sprite dimensions include Minecraft's anisotropic filtering border.
+	 */
+	protected boolean anisotropicFiltering;
 
 	/**
 	 * Is the icon flipped on the horizontal axis.
@@ -69,8 +83,8 @@ public class MalisisIcon extends TextureAtlasSprite
 	public MalisisIcon()
 	{
 		super("");
-		maxU = 1;
-		maxV = 1;
+		rawMaxU = 1;
+		rawMaxV = 1;
 	}
 
 	public MalisisIcon(String name)
@@ -87,10 +101,7 @@ public class MalisisIcon extends TextureAtlasSprite
 	public MalisisIcon(String name, float u, float v, float U, float V)
 	{
 		this(name);
-		minU = u;
-		minV = v;
-		maxU = U;
-		maxV = V;
+		setUVs(u, v, U, V);
 	}
 
 	public MalisisIcon(IIcon icon)
@@ -124,34 +135,46 @@ public class MalisisIcon extends TextureAtlasSprite
 
 	public void setUVs(float u, float v, float U, float V)
 	{
-		minU = u;
-		minV = v;
-		maxU = U;
-		maxV = V;
+		rawMinU = u;
+		rawMinV = v;
+		rawMaxU = U;
+		rawMaxV = V;
 	}
 
 	@Override
 	public float getMinU()
 	{
-		return this.flippedU ? maxU : minU;
+		return this.flippedU ? rawMaxU : rawMinU;
 	}
 
 	@Override
 	public float getMaxU()
 	{
-		return this.flippedU ? minU : maxU;
+		return this.flippedU ? rawMinU : rawMaxU;
 	}
 
 	@Override
 	public float getMinV()
 	{
-		return this.flippedV ? maxV : minV;
+		return this.flippedV ? rawMaxV : rawMinV;
 	}
 
 	@Override
 	public float getMaxV()
 	{
-		return this.flippedV ? minV : maxV;
+		return this.flippedV ? rawMinV : rawMaxV;
+	}
+
+	@Override
+	public float getInterpolatedU(double value)
+	{
+		return rawMinU + (rawMaxU - rawMinU) * (float) value / 16.0F;
+	}
+
+	@Override
+	public float getInterpolatedV(double value)
+	{
+		return rawMinV + (rawMaxV - rawMinV) * (float) value / 16.0F;
 	}
 
 	/**
@@ -251,8 +274,8 @@ public class MalisisIcon extends TextureAtlasSprite
 	 */
 	public MalisisIcon clip(int offsetX, int offsetY, int width, int height)
 	{
-		this.width = width + (useAnisotropicFiltering ? 16 : 0);
-		this.height = height + (useAnisotropicFiltering ? 16 : 0);
+		this.width = width + (anisotropicFiltering ? 16 : 0);
+		this.height = height + (anisotropicFiltering ? 16 : 0);
 		offset(offsetX, offsetY);
 
 		return this;
@@ -270,7 +293,7 @@ public class MalisisIcon extends TextureAtlasSprite
 	 */
 	public MalisisIcon clip(float offsetXFactor, float offsetYFactor, float widthFactor, float heightFactor)
 	{
-		if (useAnisotropicFiltering)
+		if (anisotropicFiltering)
 		{
 			width -= 16;
 			height -= 16;
@@ -282,7 +305,7 @@ public class MalisisIcon extends TextureAtlasSprite
 		width = Math.round(width * widthFactor);
 		height = Math.round(height * heightFactor);
 
-		if (useAnisotropicFiltering)
+		if (anisotropicFiltering)
 		{
 			width += 16;
 			height += 16;
@@ -308,8 +331,24 @@ public class MalisisIcon extends TextureAtlasSprite
 		this.sheetWidth = width;
 		this.sheetHeight = height;
 		super.initSprite(width, height, x, y, rotated);
+
+		float insetU = (float) (0.01D / (double) width);
+		float insetV = (float) (0.01D / (double) height);
+		int anisotropicOffset = anisotropicFiltering ? 8 : 0;
+		rawMinU = (float) (x + anisotropicOffset) / (float) width + insetU;
+		rawMaxU = (float) (x + this.width - anisotropicOffset) / (float) width - insetU;
+		rawMinV = (float) (y + anisotropicOffset) / (float) height + insetV;
+		rawMaxV = (float) (y + this.height - anisotropicOffset) / (float) height - insetV;
+
 		for (MalisisIcon dep : dependants)
 			dep.initIcon(this, width, height, x, y, rotated);
+	}
+
+	@Override
+	public void loadSprite(BufferedImage[] images, AnimationMetadataSection animationMetadata, boolean anisotropicFiltering)
+	{
+		this.anisotropicFiltering = anisotropicFiltering;
+		super.loadSprite(images, animationMetadata, anisotropicFiltering);
 	}
 
 	/**
@@ -320,11 +359,16 @@ public class MalisisIcon extends TextureAtlasSprite
 	public void copyFrom(MalisisIcon base)
 	{
 		super.copyFrom(base);
-		this.useAnisotropicFiltering = base.useAnisotropicFiltering;
+		this.rawMinU = base.rawMinU;
+		this.rawMaxU = base.rawMaxU;
+		this.rawMinV = base.rawMinV;
+		this.rawMaxV = base.rawMaxV;
+		this.anisotropicFiltering = base.anisotropicFiltering;
 		this.sheetWidth = base.sheetWidth;
 		this.sheetHeight = base.sheetHeight;
 		this.flippedU = base.flippedU;
 		this.flippedV = base.flippedV;
+		this.rotation = base.rotation;
 	}
 
 	/**
