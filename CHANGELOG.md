@@ -11,3 +11,17 @@
 - Replaced MalisisCore logging in proxy-world fallback handling with Forge logging.
 - Documented the ownership boundaries for standalone rendering, animation, and
   focused compatibility helpers.
+
+# Finish standalone MalisisCore implementation port
+
+## Changed
+
+- Ported the block, position, ray-tracing, multi-block, collision, timing, inventory,
+  GUI, icon, font, model, renderer, and animation support used by MalisisDoors into
+  `net.malisis.doors.internal`.
+- Updated MalisisDoors blocks, items, tile entities, movement strategies, renderers,
+  and GUI screens to consume the locally owned support packages.
+- Added an explicit private inventory synchronization channel without restoring a
+  standalone core mod or external dependency.
+- Retained the Forge configuration and packet migrations from the first standalone
+  removal pass.

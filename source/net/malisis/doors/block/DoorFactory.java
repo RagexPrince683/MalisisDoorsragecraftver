@@ -24,10 +24,10 @@
 
 package net.malisis.doors.block;
 
-import net.malisis.core.block.MalisisBlock;
-import net.malisis.core.inventory.IInventoryProvider;
-import net.malisis.core.inventory.MalisisInventory;
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.block.MalisisBlock;
+import net.malisis.doors.internal.inventory.IInventoryProvider;
+import net.malisis.doors.internal.inventory.MalisisInventory;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.entity.DoorFactoryTileEntity;
 import net.minecraft.block.Block;

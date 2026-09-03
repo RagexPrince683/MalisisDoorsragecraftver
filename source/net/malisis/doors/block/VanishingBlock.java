@@ -27,8 +27,8 @@ package net.malisis.doors.block;
 import java.util.List;
 import java.util.Random;
 
-import net.malisis.core.block.IBoundingBox;
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.block.IBoundingBox;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.ProxyAccess;
 import net.malisis.doors.entity.VanishingTileEntity;

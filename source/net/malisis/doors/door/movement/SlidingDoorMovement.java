@@ -25,12 +25,12 @@
 package net.malisis.doors.door.movement;
 
 import static net.malisis.doors.door.block.Door.*;
-import net.malisis.core.block.BoundingBoxType;
-import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.animation.Animation;
-import net.malisis.core.renderer.animation.transformation.Transformation;
-import net.malisis.core.renderer.animation.transformation.Translation;
-import net.malisis.core.renderer.model.MalisisModel;
+import net.malisis.doors.internal.block.BoundingBoxType;
+import net.malisis.doors.internal.renderer.RenderParameters;
+import net.malisis.doors.internal.renderer.animation.Animation;
+import net.malisis.doors.internal.renderer.animation.transformation.Transformation;
+import net.malisis.doors.internal.renderer.animation.transformation.Translation;
+import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.tileentity.DoorTileEntity;

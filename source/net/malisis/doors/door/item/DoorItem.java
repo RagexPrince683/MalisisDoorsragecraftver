@@ -24,7 +24,7 @@
 
 package net.malisis.doors.door.item;
 
-import net.malisis.core.MalisisCore;
+import net.malisis.doors.internal.InternalSupport;
 import net.malisis.doors.door.DoorDescriptor;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -79,7 +79,7 @@ public class DoorItem extends ItemDoor
 		Block block = getDescriptor(itemStack).getBlock();
 		if (block == null)
 		{
-			MalisisCore.log.error("Can't place Door : block is null for " + itemStack);
+			InternalSupport.log.error("Can't place Door : block is null for " + itemStack);
 			return false;
 		}
 

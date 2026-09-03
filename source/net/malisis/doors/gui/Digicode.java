@@ -24,13 +24,13 @@
 
 package net.malisis.doors.gui;
 
-import net.malisis.core.client.gui.GuiRenderer;
-import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.container.UIContainer;
-import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.client.gui.event.ComponentEvent;
-import net.malisis.core.renderer.font.FontRenderOptions;
-import net.malisis.core.renderer.font.MalisisFont;
+import net.malisis.doors.internal.client.gui.GuiRenderer;
+import net.malisis.doors.internal.client.gui.MalisisGui;
+import net.malisis.doors.internal.client.gui.component.container.UIContainer;
+import net.malisis.doors.internal.client.gui.component.interaction.UIButton;
+import net.malisis.doors.internal.client.gui.event.ComponentEvent;
+import net.malisis.doors.internal.renderer.font.FontRenderOptions;
+import net.malisis.doors.internal.renderer.font.MalisisFont;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.network.DigicodeMessage;
 
