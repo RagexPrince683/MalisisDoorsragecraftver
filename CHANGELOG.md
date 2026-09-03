@@ -1,3 +1,15 @@
+# Add Forge 1.7.10 development mod dependencies
+
+## Changed
+
+- Added a tracked `devmods` location for local development mod JARs while keeping
+  those third-party files ignored by Git and out of release artifacts.
+- Added the classic Minecraft 1.7.10 NEI, CodeChickenCore, and CodeChickenLib
+  development artifacts to the compile and runtime environments through the
+  ChickenBones-compatible Maven mirror.
+- Documented how contributors can add local development mods without editing the
+  Gradle build.
+
 # Fix MalisisIcon Java compilation
 
 ## Fixed
