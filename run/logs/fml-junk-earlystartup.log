@@ -12,3 +12,18 @@
 [00:11:33] [main/INFO] [LaunchWrapper]: Using primary tweak class name cpw.mods.fml.common.launcher.FMLTweaker
 [00:11:33] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.gradle.tweakers.CoremodTweaker
 [00:11:33] [main/INFO] [LaunchWrapper]: Calling tweak class cpw.mods.fml.common.launcher.FMLTweaker
+[00:23:04] [main/INFO] [GradleStart]: userProperties: {}
+[00:23:04] [main/INFO] [GradleStart]: assetsDir: C:\Users\Owner\.gradle\caches\retro_futura_gradle\assets
+[00:23:04] [main/INFO] [GradleStart]: assetIndex: 1.7.10
+[00:23:04] [main/INFO] [GradleStart]: accessToken: 0
+[00:23:04] [main/INFO] [GradleStart]: version: 1.7.10
+[00:23:04] [main/INFO] [GradleStart]: username: 
+[00:23:04] [main/INFO] [GradleStart]: Extra: [--gameDir, C:\Users\Owner\Documents\Downloads\bullshit\MalisisDoorsragecraftver\run, --uuid, d41d8cd9-8f00-3204-a980-0998ecf8427e]
+[00:23:04] [main/INFO] [GradleStart]: Found and added coremod: codechicken.nei.asm.NEICorePlugin
+[00:23:04] [main/INFO] [GradleStart]: Found and added coremod: codechicken.core.launch.CodeChickenCorePlugin
+[00:23:04] [main/INFO] [GradleStart]: Running with arguments: [--userProperties, {}, --assetsDir, C:\Users\Owner\.gradle\caches\retro_futura_gradle\assets, --assetIndex, 1.7.10, --accessToken, {REDACTED}, --version, 1.7.10, --tweakClass, cpw.mods.fml.common.launcher.FMLTweaker, --gameDir, C:\Users\Owner\Documents\Downloads\bullshit\MalisisDoorsragecraftver\run, --uuid, d41d8cd9-8f00-3204-a980-0998ecf8427e, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]
+[00:23:04] [main/INFO] [LaunchWrapper]: Loading tweak class name cpw.mods.fml.common.launcher.FMLTweaker
+[00:23:04] [main/INFO] [LaunchWrapper]: Using primary tweak class name cpw.mods.fml.common.launcher.FMLTweaker
+[00:23:04] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.gradle.tweakers.CoremodTweaker
+[00:23:04] [main/INFO] [LaunchWrapper]: Calling tweak class cpw.mods.fml.common.launcher.FMLTweaker
+[00:23:40] [ForkJoinPool.commonPool-worker-1/WARN] [FML]: NEI: Forced tag update with reason (getDurabilityForDisplay) for 1xitem.forcefieldItem@0(net.malisis.doors.door.item.ForcefieldItem@4e5ac0b4)

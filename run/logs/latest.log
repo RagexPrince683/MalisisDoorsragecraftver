@@ -1,3 +1,48 @@
-[00:11:34] [main/INFO]: Setting user: Player78
-[00:11:35] [Client thread/INFO]: LWJGL Version: 2.9.4
-[00:11:41] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:NotEnoughItems, FMLFileResourcePack:Malisis' Doors
+[00:23:05] [main/INFO]: Setting user: Player93
+[00:23:06] [Client thread/INFO]: LWJGL Version: 2.9.4
+[00:23:11] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:NotEnoughItems, FMLFileResourcePack:Malisis' Doors
+[00:23:12] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
+[00:23:12] [Client thread/INFO]: Created: 16x16 textures/items-atlas
+[00:23:12] [Sound Library Loader/INFO]: Sound engine started
+[00:23:13] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:NotEnoughItems, FMLFileResourcePack:Malisis' Doors
+[00:23:14] [Client thread/INFO]: Created: 512x512 textures/blocks-atlas
+[00:23:14] [Client thread/INFO]: Created: 512x256 textures/items-atlas
+[00:23:15] [Sound Library Loader/INFO]: Sound engine started
+[00:23:39] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[00:23:39] [Server thread/INFO]: Generating keypair
+[00:23:39] [Server thread/INFO]: Converting map!
+[00:23:39] [Server thread/INFO]: Scanning folders...
+[00:23:39] [Server thread/INFO]: Total conversion count is 0
+[00:23:39] [Server thread/INFO]: Preparing start region for level 0
+[00:23:40] [Server thread/INFO]: Changing view distance to 12, from 10
+[00:23:40] [Server thread/INFO]: Player93[local:E:a4864032] logged in with entity id 20 at (1067.5, 4.0, -186.5)
+[00:23:40] [Server thread/INFO]: Player93 joined the game
+[00:23:42] [Server thread/INFO]: Player93 has just earned the achievement [Taking Inventory]
+[00:23:42] [Client thread/INFO]: [CHAT] Player93 has just earned the achievement [Taking Inventory]
+[00:23:43] [Server thread/INFO]: Saving and pausing game...
+[00:23:43] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[00:23:43] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[00:23:43] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[00:25:59] [Server thread/INFO]: Saving and pausing game...
+[00:25:59] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[00:25:59] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[00:25:59] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[00:26:29] [Server thread/INFO]: Saving and pausing game...
+[00:26:29] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[00:26:29] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[00:26:29] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[00:31:33] [Server thread/INFO]: Saving and pausing game...
+[00:31:33] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[00:31:33] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[00:31:33] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[00:31:40] [Server thread/INFO]: Saving and pausing game...
+[00:31:40] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[00:31:40] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[00:31:40] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[00:31:41] [Server thread/INFO]: Stopping server
+[00:31:41] [Server thread/INFO]: Saving players
+[00:31:41] [Server thread/INFO]: Saving worlds
+[00:31:41] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[00:31:41] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[00:31:41] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[00:31:42] [Client thread/INFO]: Stopping!
