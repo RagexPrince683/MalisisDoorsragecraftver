@@ -2,6 +2,8 @@
 
 ## Fixed
 
+- Re-enabled Lombok as a compile-only dependency and annotation processor so
+  the existing proxy delegates are generated during Java compilation.
 - Added the SRG-named Minecraft 1.7.10 container drag-reset bridge while keeping
   the readable internal drag helper and its existing behavior.
 - Corrected the GUI mouse-release override to the Minecraft 1.7.10
