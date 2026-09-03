@@ -1,3 +1,37 @@
+# Restore standalone MalisisCore runtime behavior
+
+## Fixed
+
+- Added a minimal MalisisDoors loading plugin that restores the four large-block
+  collision hooks and the chunk-coordinate update hook formerly supplied by
+  MalisisCore. Hook discovery is based on Forge 1.7.10 descriptors and semantic
+  bytecode call sites, and startup now fails loudly if an essential hook cannot
+  be applied.
+- Restored chunk coordinate persistence/watch synchronization and vanilla
+  replacement texture event registration during mod pre-initialization.
+- Registered the chunk coordinate packet on the standalone internal network in
+  addition to the retained inventory packets.
+- Corrected OBJ object/group handling so names without underscores are retained,
+  while underscore-prefixed legacy groups continue to merge instead of silently
+  overwriting earlier faces. This restores both halves of the Saloon Door model.
+
+## Audited
+
+- Confirmed the shared big-door path used by Carriage and Medieval doors still
+  uses the original block, tile entity, movement, renderer, chunk collision,
+  listener, and persistence implementations; the missing runtime hooks and event
+  bootstrap were the regressions in that path.
+- Confirmed Forcefield Door and Rusty Hatch retain their original multiblock NBT
+  ownership path and use their concrete tile entities rather than the unused
+  generic `MultiBlockTileEntity` base class.
+- Confirmed the standalone Syncer classes have no `@Syncable` consumers in
+  MalisisDoors 1.13.2; registering that dormant subsystem would add an unused
+  packet rather than restore gameplay behavior.
+- Confirmed the Door Factory block textures and case-sensitive tab-icon resource
+  paths exist in the source tree and in the existing development JAR. The
+  current block name is retained by `MalisisBlock.setBlockName`, yielding
+  `malisisdoors:door_factory` and `malisisdoors:door_factory_side`.
+
 # Fix vanilla block replacement startup crash
 
 ## Fixed

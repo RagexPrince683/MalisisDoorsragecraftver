@@ -59,6 +59,40 @@ public class ChunkCollision
 	private Point src;
 	private Point dest;
 
+	/** Entry point injected into World#getCollidingBoundingBoxes. */
+	public static List<AxisAlignedBB> appendCollisionBoxes(List<AxisAlignedBB> list, World world, Entity entity, AxisAlignedBB mask)
+	{
+		get().getCollisionBoundingBoxes(world, mask, list, entity);
+		return list;
+	}
+
+	/** Entry point injected before every return from World#rayTraceBlocks. */
+	public static MovingObjectPosition mergeRayTrace(MovingObjectPosition result, World world, Vec3 src, Vec3 dest)
+	{
+		if (src == null || dest == null)
+			return result;
+
+		return get().getRayTraceResult(world, result, new Point(src), new Point(dest));
+	}
+
+	/** Entry point injected into ItemBlock#onItemUse after its target coordinates are adjusted. */
+	public static boolean canPlaceBlock(ItemStack itemStack, EntityPlayer player, World world, Block block,
+			int x, int y, int z, int side)
+	{
+		return get().canPlaceBlockAt(itemStack, player, world, block, x, y, z, side);
+	}
+
+	/**
+	 * Entry point injected into NetHandlerPlayServer#processPlayerDigging.
+	 * Large blocks are ray traced back to their origin, which may legitimately
+	 * be farther away than vanilla's six-block squared-distance check.
+	 */
+	public static double getBlockReachDistanceSquared(EntityPlayer player, int x, int y, int z)
+	{
+		Block block = player.worldObj.getBlock(x, y, z);
+		return block instanceof IChunkCollidable ? Double.MAX_VALUE : 36.0D;
+	}
+
 	//#region getCollisionBoundinBoxes
 	/**
 	 * Gets the collision bounding boxes for the intersecting chunks.<br>
@@ -118,11 +152,17 @@ public class ChunkCollision
 	{
 		if (src == null || dest == null)
 			return mop;
+		return getRayTraceResult(world, mop, src, dest);
+	}
 
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(src.x, src.y, src.z, dest.x, dest.y, dest.z);
+	private MovingObjectPosition getRayTraceResult(World world, MovingObjectPosition mop, Point raySource, Point rayDestination)
+	{
+
+		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(raySource.x, raySource.y, raySource.z,
+				rayDestination.x, rayDestination.y, rayDestination.z);
 		AABBUtils.fix(aabb);
 
-		RayTraceProcedure procedure = new RayTraceProcedure(src, dest, mop);
+		RayTraceProcedure procedure = new RayTraceProcedure(raySource, rayDestination, mop);
 		for (Chunk chunk : ChunkBlockHandler.getAffectedChunks(world, aabb))
 			ChunkBlockHandler.get().callProcedure(chunk, procedure);
 
