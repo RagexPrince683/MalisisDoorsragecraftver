@@ -24,7 +24,7 @@
 
 package net.malisis.doors.block;
 
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;

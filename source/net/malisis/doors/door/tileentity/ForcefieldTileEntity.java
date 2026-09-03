@@ -24,7 +24,7 @@
 
 package net.malisis.doors.door.tileentity;
 
-import net.malisis.core.util.MultiBlock;
+import net.malisis.doors.internal.util.MultiBlock;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.DoorRegistry;
 import net.malisis.doors.door.DoorState;

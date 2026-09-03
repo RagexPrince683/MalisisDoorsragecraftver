@@ -2,7 +2,7 @@ package net.malisis.doors.proxy;
 
 import static net.malisis.doors.MalisisDoors.Blocks.*;
 import static net.malisis.doors.MalisisDoors.Items.*;
-import net.malisis.core.renderer.font.MalisisFont;
+import net.malisis.doors.internal.renderer.font.MalisisFont;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.block.MixedBlock;
 import net.malisis.doors.block.RustyLadder;

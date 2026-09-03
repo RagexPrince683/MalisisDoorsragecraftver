@@ -30,8 +30,8 @@ package net.malisis.doors.door.block;
  */
 
 import static net.malisis.doors.MalisisDoors.Blocks.*;
-import net.malisis.core.renderer.icon.MalisisIcon;
-import net.malisis.core.util.TileEntityUtils;
+import net.malisis.doors.internal.renderer.icon.MalisisIcon;
+import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
 import net.malisis.doors.door.tileentity.FenceGateTileEntity;

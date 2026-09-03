@@ -24,7 +24,7 @@
 
 package net.malisis.doors.door.item;
 
-import net.malisis.core.util.MultiBlock;
+import net.malisis.doors.internal.util.MultiBlock;
 import net.malisis.doors.MalisisDoors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;

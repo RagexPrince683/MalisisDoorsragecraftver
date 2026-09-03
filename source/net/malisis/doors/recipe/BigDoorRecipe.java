@@ -24,9 +24,9 @@
 
 package net.malisis.doors.recipe;
 
-import net.malisis.core.util.BlockState;
-import net.malisis.core.util.ItemUtils;
-import net.malisis.core.util.ItemUtils.ItemStackSplitter;
+import net.malisis.doors.internal.util.BlockState;
+import net.malisis.doors.internal.util.ItemUtils;
+import net.malisis.doors.internal.util.ItemUtils.ItemStackSplitter;
 import net.malisis.doors.MalisisDoors.Blocks;
 import net.malisis.doors.door.block.BigDoor;
 import net.malisis.doors.door.block.BigDoor.Type;

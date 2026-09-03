@@ -24,7 +24,7 @@
 
 package net.malisis.doors.trapdoor.block;
 
-import net.malisis.core.block.BoundingBoxType;
+import net.malisis.doors.internal.block.BoundingBoxType;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.tileentity.DoorTileEntity;

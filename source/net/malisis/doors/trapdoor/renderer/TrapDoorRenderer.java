@@ -24,13 +24,13 @@
 
 package net.malisis.doors.trapdoor.renderer;
 
-import net.malisis.core.renderer.RenderParameters;
-import net.malisis.core.renderer.RenderType;
-import net.malisis.core.renderer.animation.Animation;
-import net.malisis.core.renderer.element.Face;
-import net.malisis.core.renderer.element.Shape;
-import net.malisis.core.renderer.element.shape.Cube;
-import net.malisis.core.renderer.model.MalisisModel;
+import net.malisis.doors.internal.renderer.RenderParameters;
+import net.malisis.doors.internal.renderer.RenderType;
+import net.malisis.doors.internal.renderer.animation.Animation;
+import net.malisis.doors.internal.renderer.element.Face;
+import net.malisis.doors.internal.renderer.element.Shape;
+import net.malisis.doors.internal.renderer.element.shape.Cube;
+import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.renderer.DoorRenderer;

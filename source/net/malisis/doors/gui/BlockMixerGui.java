@@ -1,14 +1,14 @@
 package net.malisis.doors.gui;
 
-import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.UISlot;
-import net.malisis.core.client.gui.component.container.UIPlayerInventory;
-import net.malisis.core.client.gui.component.container.UIWindow;
-import net.malisis.core.client.gui.component.decoration.UIProgressBar;
-import net.malisis.core.client.gui.component.decoration.UITooltip;
-import net.malisis.core.client.gui.component.interaction.UICheckBox;
-import net.malisis.core.inventory.MalisisInventoryContainer;
+import net.malisis.doors.internal.client.gui.Anchor;
+import net.malisis.doors.internal.client.gui.MalisisGui;
+import net.malisis.doors.internal.client.gui.component.UISlot;
+import net.malisis.doors.internal.client.gui.component.container.UIPlayerInventory;
+import net.malisis.doors.internal.client.gui.component.container.UIWindow;
+import net.malisis.doors.internal.client.gui.component.decoration.UIProgressBar;
+import net.malisis.doors.internal.client.gui.component.decoration.UITooltip;
+import net.malisis.doors.internal.client.gui.component.interaction.UICheckBox;
+import net.malisis.doors.internal.inventory.MalisisInventoryContainer;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.MalisisDoorsSettings;
 import net.malisis.doors.entity.BlockMixerTileEntity;
