@@ -241,23 +241,50 @@ public class AsmUtils
 	 */
 	public static Field changeFieldAccess(Class clazz, String fieldName, String srgName)
 	{
+		String primaryName = InternalSupport.isObfEnv ? srgName : fieldName;
+		String fallbackName = InternalSupport.isObfEnv ? fieldName : srgName;
+		Field field;
+
 		try
 		{
-			// modify reference in Blocks class
-			Field f = clazz.getDeclaredField(InternalSupport.isObfEnv ? srgName : fieldName);
-			f.setAccessible(true);
+			field = clazz.getDeclaredField(primaryName);
+		}
+		catch (NoSuchFieldException primaryFailure)
+		{
+			if (primaryName.equals(fallbackName))
+				throw missingFieldException(clazz, fieldName, srgName, primaryFailure);
+
+			try
+			{
+				field = clazz.getDeclaredField(fallbackName);
+			}
+			catch (NoSuchFieldException fallbackFailure)
+			{
+				fallbackFailure.addSuppressed(primaryFailure);
+				throw missingFieldException(clazz, fieldName, srgName, fallbackFailure);
+			}
+		}
+
+		try
+		{
+			field.setAccessible(true);
 			Field modifiers = Field.class.getDeclaredField("modifiers");
 			modifiers.setAccessible(true);
-			modifiers.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+			modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
-			return f;
+			return field;
 		}
 		catch (ReflectiveOperationException e)
 		{
-			e.printStackTrace();
+			throw new IllegalStateException("Could not make field accessible on " + clazz.getName() + " (MCP/development name: "
+					+ fieldName + ", SRG name: " + srgName + ")", e);
 		}
+	}
 
-		return null;
+	private static IllegalStateException missingFieldException(Class clazz, String fieldName, String srgName, NoSuchFieldException cause)
+	{
+		return new IllegalStateException("Could not find required field on " + clazz.getName() + " (MCP/development name: " + fieldName
+				+ ", SRG name: " + srgName + ")", cause);
 	}
 
 	public static Method changeMethodAccess(Class clazz, String methodName, String params)
