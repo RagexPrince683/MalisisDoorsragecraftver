@@ -214,7 +214,7 @@ public class MalisisInventory implements IInventory
 	 * @return true, if successful
 	 */
 	@Override
-	public boolean isCustomInventoryName()
+	public boolean hasCustomInventoryName()
 	{
 		return name != null;
 	}

@@ -69,6 +69,16 @@ public class MalisisBlock extends Block implements IBoundingBox
 		return name;
 	}
 
+	/**
+	 * Gets the texture name used by the item that represents this block.
+	 *
+	 * @return the item texture name
+	 */
+	public String getItemIconName()
+	{
+		return getTextureName();
+	}
+
 	public void register()
 	{
 		GameRegistry.registerBlock(this, getName());

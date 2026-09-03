@@ -1,3 +1,13 @@
+# Fix remaining stable_12 Java compilation errors
+
+## Fixed
+
+- Corrected the inventory custom-name override to the Minecraft 1.7.10
+  `IInventory.hasCustomInventoryName()` signature.
+- Restored the shared block item-icon hook used by big doors and rusty hatches.
+- Updated multiblock origin resolution to use the Minecraft 1.7.10
+  `TileEntity.getWorldObj()` accessor.
+
 # Fix stable_12 Java source compatibility
 
 ## Fixed
