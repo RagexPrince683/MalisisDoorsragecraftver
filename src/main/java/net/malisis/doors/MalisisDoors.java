@@ -2,7 +2,6 @@ package net.malisis.doors;
 
 import net.malisis.doors.internal.renderer.font.MalisisFont;
 import net.malisis.doors.internal.InternalSupport;
-import net.malisis.doors.internal.util.chunkblock.ChunkBlockHandler;
 import net.malisis.doors.internal.util.replacement.ReplacementTool;
 import net.malisis.doors.block.BlockMixer;
 import net.malisis.doors.block.DoorFactory;
@@ -13,6 +12,7 @@ import net.malisis.doors.block.RustyLadder;
 import net.malisis.doors.block.VanishingBlock;
 import net.malisis.doors.block.VanishingDiamondBlock;
 import net.malisis.doors.door.block.BigDoor;
+import net.malisis.doors.door.block.BigDoorProxyBlock;
 import net.malisis.doors.door.block.FenceGate;
 import net.malisis.doors.door.block.ForcefieldDoor;
 import net.malisis.doors.door.block.RustyHatch;
@@ -21,6 +21,7 @@ import net.malisis.doors.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -32,7 +33,6 @@ import net.malisis.doors.network.DoorFactoryMessage;
 import net.malisis.doors.network.VanishingDiamondFrameMessage;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = MalisisDoors.modid, name = MalisisDoors.modname, version = MalisisDoors.version)
 public class MalisisDoors
@@ -65,11 +65,8 @@ public class MalisisDoors
 	{
 		settings = new MalisisDoorsSettings(event.getSuggestedConfigurationFile());
 
-		// These support objects used to be registered by MalisisCore. They remain
-		// required by large-block persistence and vanilla replacement textures.
-		MinecraftForge.EVENT_BUS.register(ChunkBlockHandler.get());
 		MinecraftForge.EVENT_BUS.register(ReplacementTool.instance());
-		InternalSupport.log.info("Registered standalone chunk persistence, chunk synchronization, and replacement texture support");
+		InternalSupport.log.info("Registered standalone replacement texture support");
 
 		Registers.init();
 
@@ -116,6 +113,7 @@ public class MalisisDoors
 		public static Block curtains;
 		public static BigDoor carriageDoor;
 		public static BigDoor medievalDoor;
+		public static BigDoorProxyBlock bigDoorProxy;
 		public static ForcefieldDoor forcefieldDoor;
 		public static RustyLadder rustyLadder;
 		public static Block ironTrapDoor;

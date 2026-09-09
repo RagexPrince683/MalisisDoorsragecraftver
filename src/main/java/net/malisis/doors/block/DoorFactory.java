@@ -58,6 +58,7 @@ public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 		super(Material.iron);
 		setCreativeTab(MalisisDoors.tab);
 		setBlockName("door_factory");
+		setBlockTextureName(MalisisDoors.modid + ":door_factory_side");
 		setHardness(3.0F);
 	}
 
@@ -65,8 +66,8 @@ public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister)
 	{
-		this.blockIcon = iconRegister.registerIcon(MalisisDoors.modid + ":" + name + "_side");
-		this.frontIcon = iconRegister.registerIcon(MalisisDoors.modid + ":" + name);
+		this.blockIcon = iconRegister.registerIcon(getTextureName());
+		this.frontIcon = iconRegister.registerIcon(MalisisDoors.modid + ":door_factory");
 	}
 
 	@Override

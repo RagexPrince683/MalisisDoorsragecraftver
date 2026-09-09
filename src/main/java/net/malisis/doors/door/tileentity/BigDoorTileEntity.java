@@ -24,24 +24,17 @@
 
 package net.malisis.doors.door.tileentity;
 
-import net.malisis.doors.internal.InternalSupport;
 import net.malisis.doors.internal.block.BoundingBoxType;
 import net.malisis.doors.internal.util.BlockState;
-import net.malisis.doors.internal.util.MultiBlock;
-import net.malisis.doors.internal.util.chunkblock.ChunkBlockHandler;
-import net.malisis.doors.internal.util.chunkcollision.ChunkCollision;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.DoorRegistry;
-import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.BigDoor;
-import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.movement.CarriageDoorMovement;
 import net.malisis.doors.door.sound.CarriageDoorSound;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.base.Objects;
 
@@ -51,9 +44,7 @@ import com.google.common.base.Objects;
  */
 public class BigDoorTileEntity extends DoorTileEntity
 {
-	private boolean delete = false;
-	private boolean processed = true;
-	private ForgeDirection direction = ForgeDirection.NORTH;
+	private boolean proxiesChecked;
 
 	private BlockState frameState;
 
@@ -99,41 +90,12 @@ public class BigDoorTileEntity extends DoorTileEntity
 	}
 
 	@Override
-	public void setDoorState(DoorState newState)
-	{
-		boolean moving = this.moving;
-		BlockState state = null;
-		if (getWorldObj() != null)
-		{
-			state = new BlockState(xCoord, yCoord, zCoord, getBlockType());
-			ChunkCollision.get().updateBlocks(getWorldObj(), state);
-		}
-
-		super.setDoorState(newState);
-		if (getWorldObj() != null && moving && !this.moving)
-			ChunkCollision.get().replaceBlocks(getWorldObj(), state);
-
-	}
-
-	@Override
 	public void updateEntity()
 	{
-		if (!processed && getWorldObj() != null)
+		if (!proxiesChecked && getWorldObj() != null && !getWorldObj().isRemote)
 		{
-			if (delete)
-			{
-				InternalSupport.log.info("Deleting " + xCoord + "," + yCoord + "," + zCoord);
-				getWorldObj().setBlockToAir(xCoord, yCoord, zCoord);
-			}
-			else
-			{
-				InternalSupport.log.info("Adding to chunk : " + xCoord + "," + yCoord + "," + zCoord);
-				ChunkBlockHandler.get().updateCoordinates(getWorldObj().getChunkFromBlockCoords(xCoord, zCoord), xCoord, yCoord, zCoord,
-						Blocks.air, getBlockType());
-				getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, Door.dirToInt(direction), 2);
-				processed = true;
-			}
-			return;
+			((BigDoor) getBlockType()).repairProxies(getWorldObj(), xCoord, yCoord, zCoord);
+			proxiesChecked = true;
 		}
 		super.updateEntity();
 	}
@@ -151,14 +113,7 @@ public class BigDoorTileEntity extends DoorTileEntity
 	public void readFromNBT(NBTTagCompound tag)
 	{
 		super.readFromNBT(tag);
-		if (tag.hasKey("multiBlock"))
-		{
-			MultiBlock mb = new MultiBlock(tag);
-			delete = !mb.isOrigin(xCoord, yCoord, zCoord);
-			direction = mb.getDirection();
-			processed = false;
-		}
-
+		proxiesChecked = false;
 		frameState = Objects.firstNonNull(BlockState.fromNBT(tag), new BlockState(Blocks.quartz_block));
 	}
 

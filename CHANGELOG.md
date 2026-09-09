@@ -1,3 +1,27 @@
+# Replace large-door coremod hooks with Forge multiblocks
+
+## Fixed
+
+- Replaced Carriage and Medieval Door's origin-only world representation with
+  persistent, invisible proxy blocks. Each occupied 4-by-5 cell now clips and
+  exposes the origin door's live thin collision and ray-trace geometry.
+- Added transactional large-door placement, remote-part activation and
+  breaking, single-item drops, owned-proxy cleanup, orphan cleanup, and safe
+  missing-proxy repair.
+- Restored the Saloon Door's intended world mesh by rendering the hinged
+  `Plane` object while retaining the displaced `Plane.001` item-preview helper.
+- Made OBJ group collisions lossless instead of merging unrelated groups.
+- Initialized the Door Factory's canonical texture name, fixing the ItemBlock
+  inventory lookup while retaining explicit front and side atlas entries.
+
+## Removed
+
+- Removed the MalisisDoors loading plugin and transformer. No Minecraft
+  `World`, `Chunk`, `ItemBlock`, or `NetHandlerPlayServer` transformation is
+  required.
+- Removed the unused chunk collision/listener/persistence subsystem formerly
+  used only to project a large door beyond its real origin block.
+
 # Restore standalone MalisisCore runtime behavior
 
 ## Fixed

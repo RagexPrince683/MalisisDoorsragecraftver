@@ -109,8 +109,12 @@ public class MalisisBlock extends Block implements IBoundingBox
 	{
 		for (AxisAlignedBB aabb : getBoundingBox(world, x, y, z, BoundingBoxType.COLLISION))
 		{
-			if (aabb != null && mask.intersectsWith(aabb.offset(x, y, z)))
-				list.add(aabb);
+			if (aabb == null)
+				continue;
+
+			AxisAlignedBB worldBox = aabb.copy().offset(x, y, z);
+			if (mask.intersectsWith(worldBox))
+				list.add(worldBox);
 		}
 	}
 
