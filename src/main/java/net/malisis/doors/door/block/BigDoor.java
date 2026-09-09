@@ -27,19 +27,19 @@ package net.malisis.doors.door.block;
 import java.util.ArrayList;
 
 import net.malisis.doors.internal.block.BoundingBoxType;
+import net.malisis.doors.internal.InternalSupport;
 import net.malisis.doors.internal.block.MalisisBlock;
 import net.malisis.doors.internal.util.AABBUtils;
 import net.malisis.doors.internal.util.BlockPos;
 import net.malisis.doors.internal.util.BlockState;
+import net.malisis.doors.door.tileentity.BigDoorProxyTileEntity;
 import net.malisis.doors.internal.util.EntityUtils;
 import net.malisis.doors.internal.util.TileEntityUtils;
-import net.malisis.doors.internal.util.chunkcollision.ChunkCollision;
-import net.malisis.doors.internal.util.chunkcollision.IChunkCollidable;
-import net.malisis.doors.internal.util.chunklistener.IBlockListener;
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.MalisisDoors.Items;
 import net.malisis.doors.door.tileentity.BigDoorTileEntity;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -56,7 +56,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  * @author Ordinastie
  *
  */
-public class BigDoor extends MalisisBlock implements ITileEntityProvider, IChunkCollidable, IBlockListener
+public class BigDoor extends MalisisBlock implements ITileEntityProvider
 {
 	public enum Type
 	{
@@ -117,11 +117,12 @@ public class BigDoor extends MalisisBlock implements ITileEntityProvider, IChunk
 		int metadata = Door.dirToInt(dir);
 		world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
 
-		ChunkCollision.get().replaceBlocks(world, new BlockState(world, x, y, z));
-
 		BigDoorTileEntity te = TileEntityUtils.getTileEntity(BigDoorTileEntity.class, world, x, y, z);
 		if (te != null)
 			te.setFrameState(BlockState.fromNBT(itemStack.getTagCompound()));
+
+		if (!world.isRemote)
+			repairProxies(world, x, y, z);
 	}
 
 	@Override
@@ -170,12 +171,6 @@ public class BigDoor extends MalisisBlock implements ITileEntityProvider, IChunk
 	}
 
 	@Override
-	public int blockRange()
-	{
-		return 5;
-	}
-
-	@Override
 	public TileEntity createNewTileEntity(World world, int metadata)
 	{
 		return new BigDoorTileEntity();
@@ -191,13 +186,24 @@ public class BigDoor extends MalisisBlock implements ITileEntityProvider, IChunk
 			if (te != null)
 				dropBlockAsItem(world, x, y, z, te.getDroppedItemStack());
 		}
-		return super.removedByPlayer(world, player, x, y, z);
+		boolean removed = super.removedByPlayer(world, player, x, y, z);
+		if (removed && !world.isRemote)
+			removeProxies(world, x, y, z);
+		return removed;
 	}
 
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
 	{
 		return new ArrayList<ItemStack>();
+	}
+
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block block, int metadata)
+	{
+		if (!world.isRemote)
+			removeProxies(world, x, y, z);
+		super.breakBlock(world, x, y, z, block, metadata);
 	}
 
 	@Override
@@ -231,24 +237,70 @@ public class BigDoor extends MalisisBlock implements ITileEntityProvider, IChunk
 		return true;
 	}
 
-	@Override
-	public boolean onBlockSet(World world, BlockPos pos, BlockState state)
+	public BlockPos[] getStructurePositions(int x, int y, int z, ForgeDirection direction)
 	{
-		if (!state.getBlock().isReplaceable(world, state.getX(), state.getY(), state.getZ()))
-			return true;
-
-		for (AxisAlignedBB aabb : AABBUtils.getCollisionBoundingBoxes(world, new BlockState(pos, this), true))
+		AxisAlignedBB footprint = AABBUtils.rotate(defaultBoundingBox.copy(), direction);
+		int minX = (int) Math.floor(footprint.minX + 0.0001D);
+		int maxX = (int) Math.ceil(footprint.maxX - 0.0001D);
+		int minZ = (int) Math.floor(footprint.minZ + 0.0001D);
+		int maxZ = (int) Math.ceil(footprint.maxZ - 0.0001D);
+		ArrayList<BlockPos> positions = new ArrayList<BlockPos>();
+		for (int px = minX; px < maxX; px++)
 		{
-			if (state.getPos().isInside(aabb))
-				return false;
+			for (int py = 0; py < 5; py++)
+			{
+				for (int pz = minZ; pz < maxZ; pz++)
+					positions.add(new BlockPos(x + px, y + py, z + pz));
+			}
 		}
-
-		return true;
+		return positions.toArray(new BlockPos[positions.size()]);
 	}
 
-	@Override
-	public boolean onBlockRemoved(World world, BlockPos pos, BlockPos blockPos)
+	public void repairProxies(World world, int x, int y, int z)
 	{
-		return true;
+		ForgeDirection direction = Door.intToDir(world.getBlockMetadata(x, y, z));
+		for (BlockPos pos : getStructurePositions(x, y, z, direction))
+		{
+			if (pos.getX() == x && pos.getY() == y && pos.getZ() == z)
+				continue;
+
+			if (world.getBlock(pos.getX(), pos.getY(), pos.getZ()) == MalisisDoors.Blocks.bigDoorProxy)
+			{
+				BigDoorProxyTileEntity proxy = TileEntityUtils.getTileEntity(BigDoorProxyTileEntity.class, world, pos.getX(), pos.getY(),
+						pos.getZ());
+				if (proxy == null || !proxy.hasOrigin(x, y, z))
+					InternalSupport.log.warn("Could not repair large door proxy at {}, {}, {} because it belongs to another structure",
+							pos.getX(), pos.getY(), pos.getZ());
+				continue;
+			}
+
+			if (!world.getBlock(pos.getX(), pos.getY(), pos.getZ()).isReplaceable(world, pos.getX(), pos.getY(), pos.getZ()))
+			{
+				InternalSupport.log.warn("Could not repair large door proxy at {}, {}, {} because the cell is occupied", pos.getX(), pos.getY(),
+						pos.getZ());
+				continue;
+			}
+
+			world.setBlock(pos.getX(), pos.getY(), pos.getZ(), MalisisDoors.Blocks.bigDoorProxy, 0, 3);
+			BigDoorProxyBlock.setOrigin(world, pos.getX(), pos.getY(), pos.getZ(), x, y, z);
+		}
+	}
+
+	public void removeProxies(World world, int x, int y, int z)
+	{
+		for (int px = x - 4; px <= x + 4; px++)
+		{
+			for (int py = y; py < y + 5; py++)
+			{
+				for (int pz = z - 4; pz <= z + 4; pz++)
+				{
+					if (world.getBlock(px, py, pz) != MalisisDoors.Blocks.bigDoorProxy)
+						continue;
+					BigDoorProxyTileEntity proxy = TileEntityUtils.getTileEntity(BigDoorProxyTileEntity.class, world, px, py, pz);
+					if (proxy != null && proxy.hasOrigin(x, y, z))
+						world.setBlockToAir(px, py, pz);
+				}
+			}
+		}
 	}
 }

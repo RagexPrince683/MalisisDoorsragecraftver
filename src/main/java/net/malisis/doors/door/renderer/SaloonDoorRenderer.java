@@ -66,7 +66,10 @@ public class SaloonDoorRenderer extends DoorRenderer
 		next(GL11.GL_POLYGON);
 		//model.render(this, rp);
 		rp.brightness.set(block.getMixedBrightnessForBlock(world, x, y, z));
-		model.render(this, rp);
+		// Plane.001 is the Blender item-preview helper. The actual hinged door is
+		// the object named Plane; rendering both objects produces an incomplete,
+		// displaced-looking door in the world.
+		model.render(this, "plane", rp);
 	}
 
 }

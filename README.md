@@ -63,3 +63,10 @@ and NBT persistence.
 The internal Syncer source remains for source compatibility, but no current
 MalisisDoors gameplay class is annotated with `@Syncable`; active doors use their
 existing tile-entity description packets and explicit gameplay messages.
+# Standalone large doors
+
+Carriage and Medieval Doors use ordinary Forge multiblocks. The visible origin
+owns rendering and animation; invisible, persistent proxy blocks occupy the
+remaining 4-by-5 support volume and delegate collision, selection, activation,
+and removal to that origin. MalisisDoors does not install a loading plugin or
+transform Minecraft classes.

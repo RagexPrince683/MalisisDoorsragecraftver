@@ -37,6 +37,7 @@ import net.malisis.doors.block.VanishingBlock;
 import net.malisis.doors.block.VanishingDiamondBlock;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.block.BigDoor;
+import net.malisis.doors.door.block.BigDoorProxyBlock;
 import net.malisis.doors.door.block.CustomDoor;
 import net.malisis.doors.door.block.FenceGate;
 import net.malisis.doors.door.block.FenceGate.Type;
@@ -55,7 +56,9 @@ import net.malisis.doors.door.descriptor.WoodDoor;
 import net.malisis.doors.door.item.CustomDoorItem;
 import net.malisis.doors.door.item.DoorItem;
 import net.malisis.doors.door.item.ForcefieldItem;
+import net.malisis.doors.door.item.BigDoorItemBlock;
 import net.malisis.doors.door.tileentity.BigDoorTileEntity;
+import net.malisis.doors.door.tileentity.BigDoorProxyTileEntity;
 import net.malisis.doors.door.tileentity.CustomDoorTileEntity;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
 import net.malisis.doors.door.tileentity.FenceGateTileEntity;
@@ -368,11 +371,15 @@ public class Registers
 
 	private static void registerBigDoors()
 	{
+		bigDoorProxy = new BigDoorProxyBlock();
+		GameRegistry.registerBlock(bigDoorProxy, (Class<? extends net.minecraft.item.ItemBlock>) null, "big_door_proxy");
+		GameRegistry.registerTileEntity(BigDoorProxyTileEntity.class, "bigDoorProxyTileEntity");
+
 		carriageDoor = new BigDoor(BigDoor.Type.CARRIAGE);
-		carriageDoor.register();
+		carriageDoor.register(BigDoorItemBlock.class);
 
 		medievalDoor = new BigDoor(BigDoor.Type.MEDIEVAL);
-		medievalDoor.register();
+		medievalDoor.register(BigDoorItemBlock.class);
 
 		GameRegistry.registerTileEntityWithAlternatives(BigDoorTileEntity.class, "bigDoorTileEntity", "carriageDoorTileEntity");
 

@@ -354,11 +354,14 @@ public class ObjFileImporter implements IModelLoader
 		{
 			Shape s = new Shape(faces);
 			String shapeName = currentShape.toLowerCase();
-			Shape existingShape = shapes.get(shapeName);
-			if (existingShape == null)
-				shapes.put(shapeName, s);
-			else
-				existingShape.addFaces(s.getFaces());
+			if (shapes.containsKey(shapeName))
+			{
+				int suffix = 2;
+				while (shapes.containsKey(shapeName + "." + suffix))
+					suffix++;
+				shapeName = shapeName + "." + suffix;
+			}
+			shapes.put(shapeName, s);
 			faces.clear();
 		}
 
