@@ -41,6 +41,41 @@ Place production, SRG-named optional mod JARs directly in `devmods/`; the
 `prepareDevMods` task remaps them for the MCP workspace. Place MCP development
 JARs in `devmods/deobf/` to load them directly. Both locations are ignored by Git,
 and their contents are not included in the MalisisDoors output JAR.
+
+## Shared renderer state ownership
+
+The shared renderer appends chunk geometry to Forge's caller-owned tessellator
+batch and only changes the batch translation for that callback. Inventory,
+held/dropped item, tile-entity, and world-last callbacks own the batches they
+start, submit them on success, and discard incomplete buffers on failure. The
+tile-entity damage overlay submits the preceding geometry and uses a separate
+state scope and fresh batch so its color and per-vertex settings cannot leak.
+
+Non-chunk callbacks preserve incoming blend enablement and separate blend
+factors, alpha-test function and reference, current color, lighting, color
+material, shade model, texture enablement and bindings, culling enablement, and
+matrix mode through scoped, targeted OpenGL attribute groups. Model-view and
+forcefield texture-matrix pushes are balanced independently. Calls continue to
+use LWJGL's `GL11` entry points and Minecraft's `OpenGlHelper` blend entry point
+so an installed GL redirector can observe mutations and restorations; no native
+OpenGL bypass or hard renderer dependency is used.
+
+| Changed state | Restoration mechanism |
+| --- | --- |
+| Blend enablement and separate RGB/alpha factors; alpha-test enablement, function, and reference | Scoped color-buffer and enable attributes |
+| Current RGBA color | Scoped current attributes |
+| Lighting, color material, and shade model | Scoped lighting and enable attributes |
+| Texture enablement, binding, and active unit | Scoped texture and enable attributes |
+| Culling enablement | Scoped enable attributes |
+| Incoming matrix mode | Scoped transform attributes |
+| Inventory/TESR/world-last model transforms | Explicit model-view push/pop |
+| Animated forcefield texture transform | Explicit texture-matrix push/pop |
+| Damage-overlay color, blend, alpha test, and vertex settings | Nested overlay attributes and a completed or discarded overlay-owned batch |
+
+No Angelica artifact or pinned Angelica version is present in this repository
+or its local development-mod directory, so its exact redirect and state-cache
+implementation could not be inspected here. Runtime visual behavior—especially
+with Angelica installed—requires end-user development feedback.
 # Standalone runtime architecture
 
 MalisisDoors includes only the portions of MalisisCore that its 1.7.10 gameplay

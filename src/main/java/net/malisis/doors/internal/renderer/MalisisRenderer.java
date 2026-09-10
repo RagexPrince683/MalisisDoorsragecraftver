@@ -25,6 +25,7 @@
 package net.malisis.doors.internal.renderer;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,6 +88,22 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	protected static IIcon[] damagedIcons;
 	/** Reference to Tessellator.isDrawing field **/
 	private static Field isDrawingField;
+	/** Tessellator's buffer reset method, used only to discard a failed renderer-owned batch. */
+	private static Method tessellatorResetMethod;
+	/** State recorded for the active render scope. Renderer callbacks are not expected to overlap. */
+	private RenderScope renderScope;
+
+	private static class RenderScope
+	{
+		private boolean attributesPushed;
+		private boolean matrixPushed;
+		private boolean ownsBatch;
+		private boolean failed;
+		private boolean translated;
+		private int translationX;
+		private int translationY;
+		private int translationZ;
+	}
 	/** Whether this {@link MalisisRenderer} initialized. (initialize() already called) */
 	private boolean initialized = false;
 	/** Id of this {@link MalisisRenderer}. */
@@ -181,6 +198,16 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		this.z = 0;
 		this.overrideTexture = null;
 		this.destroyBlockProgress = null;
+		this.tileEntity = null;
+		this.itemStack = null;
+		this.itemRenderType = null;
+		this.renderBlocks = null;
+		this.renderGlobal = null;
+		this.partialTick = 0;
+		this.face = null;
+		this.params = null;
+		this.textureParameterDepth = 0;
+		this.faceParameterDepth = 0;
 	}
 
 	/**
@@ -299,9 +326,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	{
 		set(block, metadata);
 		renderBlocks = renderer;
-		prepare(RenderType.ISBRH_INVENTORY);
-		render();
-		clean();
+		renderScope(RenderType.ISBRH_INVENTORY);
 	}
 
 	/**
@@ -324,11 +349,9 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		renderBlocks = renderer;
 		vertexDrawn = false;
 
-		prepare(RenderType.ISBRH_WORLD);
 		if (renderer.hasOverrideBlockTexture())
 			overrideTexture = renderer.overrideBlockTexture;
-		render();
-		clean();
+		renderScope(RenderType.ISBRH_WORLD);
 		return vertexDrawn;
 	}
 
@@ -385,9 +408,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data)
 	{
 		set(type, item);
-		prepare(RenderType.ITEM_INVENTORY);
-		render();
-		clean();
+		renderScope(RenderType.ITEM_INVENTORY);
 	}
 
 	// #end IItemRenderer
@@ -406,27 +427,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTick)
 	{
 		set(te, partialTick);
-		prepare(RenderType.TESR_WORLD, x, y, z);
-		render();
-		if (getBlockDamage)
-		{
-			destroyBlockProgress = getBlockDestroyProgress();
-			if (destroyBlockProgress != null)
-			{
-				next();
-
-				GL11.glEnable(GL11.GL_BLEND);
-				OpenGlHelper.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR, GL11.GL_ONE, GL11.GL_ZERO);
-				GL11.glAlphaFunc(GL11.GL_GREATER, 0);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
-
-				t.disableColor();
-				renderDestroyProgress();
-				next();
-				GL11.glDisable(GL11.GL_BLEND);
-			}
-		}
-		clean();
+		renderScope(RenderType.TESR_WORLD, x, y, z);
 	}
 
 	// #end TESR
@@ -459,11 +460,67 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 			z = -(p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * partialTick);
 		}
 
-		prepare(RenderType.WORLD_LAST, x, y, z);
+		renderScope(RenderType.WORLD_LAST, x, y, z);
+	}
 
-		render();
+	private void renderScope(RenderType type, double... data)
+	{
+		Throwable failure = null;
+		try
+		{
+			prepare(type, data);
+			render();
+			if (type == RenderType.TESR_WORLD)
+				renderDamageOverlay();
+		}
+		catch (Throwable throwable)
+		{
+			failure = throwable;
+			if (renderScope != null)
+				renderScope.failed = true;
+			throwUnchecked(throwable);
+		}
+		finally
+		{
+			try
+			{
+				clean();
+			}
+			catch (Throwable cleanupFailure)
+			{
+				if (failure != null)
+					failure.addSuppressed(cleanupFailure);
+				else
+					throwUnchecked(cleanupFailure);
+			}
+		}
+	}
 
-		clean();
+	private void renderDamageOverlay()
+	{
+		if (!getBlockDamage)
+			return;
+
+		destroyBlockProgress = getBlockDestroyProgress();
+		if (destroyBlockProgress == null)
+			return;
+
+		next();
+		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_ENABLE_BIT | GL11.GL_CURRENT_BIT);
+		try
+		{
+			GL11.glEnable(GL11.GL_BLEND);
+			OpenGlHelper.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR, GL11.GL_ONE, GL11.GL_ZERO);
+			GL11.glAlphaFunc(GL11.GL_GREATER, 0);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
+			t.disableColor();
+			renderDestroyProgress();
+			next();
+		}
+		finally
+		{
+			GL11.glPopAttrib();
+		}
 	}
 
 	// #end IRenderWorldLast
@@ -481,28 +538,32 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		_initialize();
 		vertexDrawn = false;
 		this.renderType = renderType;
+		RenderScope scope = new RenderScope();
+		this.renderScope = scope;
 		if (renderType == RenderType.ISBRH_WORLD)
 		{
 			tessellatorShift();
 		}
 		else if (renderType == RenderType.ISBRH_INVENTORY)
 		{
+			pushRenderState(scope);
+			pushModelView(scope);
 			GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 			startDrawing();
 		}
 		else if (renderType == RenderType.ITEM_INVENTORY)
 		{
-			GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+			pushRenderState(scope);
 			startDrawing();
 		}
 		else if (renderType == RenderType.TESR_WORLD)
 		{
-			GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+			pushRenderState(scope);
 			RenderHelper.disableStandardItemLighting();
 			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 			GL11.glShadeModel(GL11.GL_SMOOTH);
 
-			GL11.glPushMatrix();
+			pushModelView(scope);
 			GL11.glTranslated(data[0], data[1], data[2]);
 
 			bindTexture(TextureMap.locationBlocksTexture);
@@ -511,18 +572,33 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		}
 		else if (renderType == RenderType.WORLD_LAST)
 		{
-			GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+			pushRenderState(scope);
 			RenderHelper.disableStandardItemLighting();
 			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 			GL11.glShadeModel(GL11.GL_SMOOTH);
 
-			GL11.glPushMatrix();
+			pushModelView(scope);
 			GL11.glTranslated(data[0], data[1], data[2]);
 
 			bindTexture(TextureMap.locationBlocksTexture);
 
 			startDrawing();
 		}
+	}
+
+	private void pushRenderState(RenderScope scope)
+	{
+		int mask = GL11.GL_COLOR_BUFFER_BIT | GL11.GL_CURRENT_BIT | GL11.GL_ENABLE_BIT | GL11.GL_LIGHTING_BIT
+				| GL11.GL_TEXTURE_BIT | GL11.GL_TRANSFORM_BIT;
+		GL11.glPushAttrib(mask);
+		scope.attributesPushed = true;
+	}
+
+	private void pushModelView(RenderScope scope)
+	{
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glPushMatrix();
+		scope.matrixPushed = true;
 	}
 
 	/**
@@ -541,8 +617,14 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	public void startDrawing(int drawMode)
 	{
 		if (isDrawing())
+		{
+			if (renderScope == null || !renderScope.ownsBatch)
+				throw new IllegalStateException("Cannot replace a caller-owned Tessellator batch");
 			draw();
+		}
 		t.startDrawing(drawMode);
+		if (renderScope != null)
+			renderScope.ownsBatch = true;
 		this.drawMode = drawMode;
 	}
 
@@ -591,8 +673,11 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	 */
 	public void draw()
 	{
-		if (isDrawing())
+		if (isDrawing() && renderScope != null && renderScope.ownsBatch)
+		{
 			t.draw();
+			renderScope.ownsBatch = false;
+		}
 	}
 
 	/**
@@ -600,33 +685,105 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	 */
 	public void clean()
 	{
-		if (renderType == RenderType.ISBRH_WORLD)
+		RenderScope scope = renderScope;
+		Throwable failure = null;
+		try
 		{
-			tessellatorUnshift();
+			if (scope != null && scope.ownsBatch)
+			{
+				if (scope.failed)
+					discardOwnedBatch(scope);
+				else
+					draw();
+			}
 		}
-		else if (renderType == RenderType.ISBRH_INVENTORY)
+		catch (Throwable throwable)
 		{
-			draw();
-			GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+			failure = throwable;
 		}
-		else if (renderType == RenderType.ITEM_INVENTORY)
+		finally
 		{
-			draw();
-			GL11.glPopAttrib();
+			failure = cleanupStep(failure, new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					tessellatorUnshift();
+				}
+			});
+			if (scope != null && scope.matrixPushed)
+			{
+				failure = cleanupStep(failure, new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						GL11.glMatrixMode(GL11.GL_MODELVIEW);
+						GL11.glPopMatrix();
+					}
+				});
+			}
+			if (scope != null && scope.attributesPushed)
+			{
+				failure = cleanupStep(failure, new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						GL11.glPopAttrib();
+					}
+				});
+			}
+			renderScope = null;
+			reset();
 		}
-		else if (renderType == RenderType.TESR_WORLD)
+		if (failure != null)
+			throwUnchecked(failure);
+	}
+
+	private Throwable cleanupStep(Throwable previous, Runnable cleanup)
+	{
+		try
 		{
-			draw();
-			GL11.glPopMatrix();
-			GL11.glPopAttrib();
+			cleanup.run();
 		}
-		else if (renderType == RenderType.WORLD_LAST)
+		catch (Throwable throwable)
 		{
-			draw();
-			GL11.glPopMatrix();
-			GL11.glPopAttrib();
+			if (previous == null)
+				return throwable;
+			previous.addSuppressed(throwable);
 		}
-		reset();
+		return previous;
+	}
+
+	private static void throwUnchecked(Throwable throwable)
+	{
+		MalisisRenderer.<RuntimeException>throwAny(throwable);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Throwable> void throwAny(Throwable throwable) throws T
+	{
+		throw (T) throwable;
+	}
+
+	private void discardOwnedBatch(RenderScope scope)
+	{
+		try
+		{
+			if (tessellatorResetMethod == null)
+			{
+				tessellatorResetMethod = ReflectionHelper.findMethod(Tessellator.class, t, new String[] { "reset", "func_78379_d" });
+				tessellatorResetMethod.setAccessible(true);
+			}
+			tessellatorResetMethod.invoke(t);
+			isDrawingField.setBoolean(t, false);
+			scope.ownsBatch = false;
+		}
+		catch (Exception exception)
+		{
+			throw new IllegalStateException("Could not discard failed Tessellator batch", exception);
+		}
 	}
 
 	/**
@@ -638,6 +795,13 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 			return;
 
 		isShifted = true;
+		if (renderScope != null)
+		{
+			renderScope.translated = true;
+			renderScope.translationX = x;
+			renderScope.translationY = y;
+			renderScope.translationZ = z;
+		}
 		t.addTranslation(x, y, z);
 	}
 
@@ -650,7 +814,8 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 			return;
 
 		isShifted = false;
-		t.addTranslation(-x, -y, -z);
+		if (renderScope != null && renderScope.translated)
+			t.addTranslation(-renderScope.translationX, -renderScope.translationY, -renderScope.translationZ);
 	}
 
 	/**

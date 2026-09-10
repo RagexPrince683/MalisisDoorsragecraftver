@@ -116,18 +116,23 @@ public class ForcefieldRenderer extends MalisisRenderer
 			model.rotate(90, 0, 1, 0, 0, 0, 0);
 		}
 
-		setTextureMatrix();
-		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-		GL11.glDisable(GL11.GL_CULL_FACE);
-
-		model.render(this, rp);
-		next();
-
-		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glMatrixMode(GL11.GL_TEXTURE);
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glPushMatrix();
+		try
+		{
+			setTextureMatrix();
+			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+
+			model.render(this, rp);
+			next();
+		}
+		finally
+		{
+			GL11.glMatrixMode(GL11.GL_TEXTURE);
+			GL11.glPopMatrix();
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		}
 	}
 
 	private void setTextureMatrix()

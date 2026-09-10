@@ -1,3 +1,13 @@
+# Fix shared renderer GL state leaks and cleanup failures
+
+## Fixed
+
+- Scoped shared block, item, tile-entity, and world-last rendering so blend and alpha functions, current color, lighting, color material, shading, texture state, culling, active matrix mode, and model-view transforms return to their incoming values after successful or failed rendering.
+- Made renderer cleanup exception-safe, retained the original rendering failure when cleanup also fails, cleared transient renderer context, balanced partial setup, and discarded failed renderer-owned tessellator batches without submitting incomplete geometry.
+- Kept chunk rendering on its caller-owned tessellator batch and restored the exact translation captured at setup rather than mutable renderer coordinates.
+- Isolated the block-damage overlay state and tessellator settings, and balanced the forcefield texture matrix without restoring assumed blend or culling defaults.
+- Confirmed the repository does not provide an Angelica binary or pinned Angelica version to inspect; compatibility is therefore based on intercepted LWJGL/OpenGlHelper calls and still requires end-user development feedback.
+
 # Add experimental hybrid rendering groundwork for opaque doors
 
 ## Changed
