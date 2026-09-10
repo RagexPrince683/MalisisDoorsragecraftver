@@ -49,8 +49,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * @author Ordinastie
  *
  */
-public class DoorFactory extends MalisisBlock implements ITileEntityProvider
-{
+public class DoorFactory extends Block implements ITileEntityProvider {
 	private IIcon sideIcon;
 	private IIcon frontIcon;
 
@@ -59,7 +58,7 @@ public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 		super(Material.iron);
 		setCreativeTab(MalisisDoors.tab);
 		setBlockName("door_factory");
-		setBlockTextureName(MalisisDoors.modid + ":door_factory_side");
+		//setBlockTextureName(MalisisDoors.modid + ":door_factory_side");
 		setHardness(3.0F);
 	}
 

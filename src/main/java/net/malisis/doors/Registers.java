@@ -327,7 +327,8 @@ public class Registers
 	private static void registerDoorFactory()
 	{
 		doorFactory = new DoorFactory();
-		doorFactory.register();
+		//doorFactory.register();
+		GameRegistry.registerBlock(doorFactory, "door_factory");
 
 		GameRegistry.registerTileEntity(DoorFactoryTileEntity.class, "doorFactoryTileEntity");
 
