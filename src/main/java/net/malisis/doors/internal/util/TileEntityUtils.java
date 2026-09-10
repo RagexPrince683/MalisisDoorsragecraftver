@@ -27,6 +27,7 @@ package net.malisis.doors.internal.util;
 import net.malisis.doors.internal.client.gui.MalisisGui;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -93,6 +94,43 @@ public class TileEntityUtils
 			//					.getSimpleName());
 			return null;
 		}
+	}
+
+	/**
+	 * Gets an already registered tile entity without asking a chunk to provide one.
+	 *
+	 * Unlike {@link World#getTileEntity(int, int, int)}, this method only examines the world's loaded tile entity list. It therefore cannot
+	 * create a missing tile entity, load a chunk, or run tile entity validation. A tile entity which is still being registered is deliberately
+	 * treated as unavailable.
+	 *
+	 * @param <T> type of TileEntity requested
+	 * @param clazz the class of the TileEntity
+	 * @param world the world
+	 * @param x the x
+	 * @param y the y
+	 * @param z the z
+	 * @return the already registered tile entity, or null if it is absent, invalid, or not of type T
+	 */
+	public static <T> T getLoadedTileEntity(Class<T> clazz, World world, int x, int y, int z)
+	{
+		if (world == null || !world.blockExists(x, y, z))
+			return null;
+
+		for (Object entry : world.loadedTileEntityList)
+		{
+			if (!(entry instanceof TileEntity))
+				continue;
+
+			TileEntity tileEntity = (TileEntity) entry;
+			if (tileEntity.isInvalid() || tileEntity.xCoord != x || tileEntity.yCoord != y || tileEntity.zCoord != z)
+				continue;
+
+			if (clazz.isInstance(tileEntity))
+				return clazz.cast(tileEntity);
+			return null;
+		}
+
+		return null;
 	}
 
 	/**

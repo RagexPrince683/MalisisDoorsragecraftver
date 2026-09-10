@@ -1,3 +1,19 @@
+# Fix fence gate world-loading render-cache recursion
+
+## Fixed
+
+- Replaced fence gate render-pair cache invalidation lookups with an already-registered tile entity lookup. Forge 1.7.10's chunk tile entity lookup may create a missing instance, while chunk registration calls `validate()` before inserting that instance; asking the chunk for an adjacent gate from `validate()` could consequently repeat creation, registration, and validation until the JVM stack overflowed.
+- Kept validation, invalidation, chunk unload, placement, rotation, neighbor, state, and packet cache refreshes, but restricted their immediate neighbor work to marking already registered gates dirty. A gate still marks its own pairing cache dirty, and the later-loading gate invalidates an earlier registered neighbor, so adjacent gates loading in either order and across loaded chunk boundaries retain a lazy refresh path.
+- Added a non-creating loaded tile entity utility which checks that a chunk is already loaded and scans only the world's registered tile entity list. It does not call chunk tile entity access, mutate Minecraft storage, load chunks, create or register instances, invoke validation, retain worlds, schedule work, or recursively propagate invalidation.
+
+## History
+
+- Commit `9ab790b4d568188c7a774e71cd041ca065fc7c4d` introduced neighbor invalidation during validation as part of the fence gate render-pair cache optimization.
+
+## Verification required
+
+- World loading and visual behavior require end-user development feedback. Existing-world gates, paired discovery and animation, both chunk-loading orders, cross-chunk pairs, camouflage, wall offsets, placement, removal, rotation, packet updates, chunk reloads, and Angelica rendering were source-reviewed but were not game-launched.
+
 # Isolate chunk renderer state for Angelica compatibility (Opportunity #11)
 
 ## Changed
