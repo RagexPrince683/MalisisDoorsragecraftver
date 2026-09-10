@@ -1,3 +1,17 @@
+# Isolate chunk renderer state for Angelica compatibility (Opportunity #11)
+
+## Changed
+
+- Removed renderer-construction and field-initializer capture of `Tessellator.instance`; render callbacks now acquire the active tessellator and release the reference during exception-safe cleanup.
+- Delegated Forge chunk callbacks to bounded, per-thread and per-nesting renderer workers so coordinates, callback references, models, shapes, parameters, vertices, animation helpers, and AO scratch data are not shared across compilations.
+- Kept render ID allocation and all Forge registration on the original renderer while worker-created instances inherit the registered ID without consuming IDs or registering handlers.
+- Preserved caller-owned chunk batches and translation restoration, renderer-owned TESR/item batches, nested callback isolation, opportunity #6 cleanup, and the existing resource initialization lifecycle.
+- Audited every registered ISBRH independently and retained all of them on Angelica's non-thread-safe compatibility path because this repository has no Angelica artifact, pinned version, or available `ThreadSafeISBRH`/`ThreadSafeISBRHFactory` API to verify.
+
+## Verification required
+
+- Runtime compatibility and visual behavior require end-user development feedback using the actual Angelica build. Threaded block/world reads, delegated `RenderBlocks` behavior, resource reloads, AO, lighting, transparency, damage overlays, and the disabled hybrid handoff were source-reviewed but not game-launched under this change.
+
 # Remove redundant door and fence gate updates (Opportunity #9)
 
 ## Changed
