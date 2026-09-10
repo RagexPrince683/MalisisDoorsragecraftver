@@ -166,12 +166,27 @@ public class FenceGateTileEntity extends DoorTileEntity
 		if (!worldObj.isRemote)
 			return;
 
-		Pair<BlockState, Integer> pair = updateCamo();
-		camoState = pair.getLeft();
-		camoColor = pair.getRight();
-		isWall = updateWall();
+		if (updateClientAppearance())
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
 
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	@Override
+	protected boolean updateClientAppearance()
+	{
+		Pair<BlockState, Integer> pair = updateCamo();
+		BlockState newCamoState = pair.getLeft();
+		int newCamoColor = pair.getRight();
+		boolean newIsWall = updateWall();
+		boolean changed = camoState == null
+				|| camoState.getBlock() != newCamoState.getBlock()
+				|| camoState.getMetadata() != newCamoState.getMetadata()
+				|| camoColor != newCamoColor
+				|| isWall != newIsWall;
+
+		camoState = newCamoState;
+		camoColor = newCamoColor;
+		isWall = newIsWall;
+		return changed;
 	}
 
 	private Pair<BlockState, Integer> updateCamo()
@@ -334,6 +349,6 @@ public class FenceGateTileEntity extends DoorTileEntity
 	{
 		clearRenderPair();
 		super.onDataPacket(net, packet);
-		updateAll();
+		invalidateLoadedRenderNeighbors();
 	}
 }

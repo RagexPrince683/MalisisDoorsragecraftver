@@ -30,6 +30,7 @@ import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.movement.IDoorMovement;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -53,6 +54,9 @@ public class DoorTileEntity extends TileEntity
 	protected DoorState state = DoorState.CLOSED;
 	protected boolean moving;
 	protected boolean centered = false;
+	private boolean centeredInitialized;
+	private boolean applyingDescriptionPacket;
+	private boolean descriptionPacketReceived;
 
 	//#region Getter/Setter
 	public DoorDescriptor getDescriptor()
@@ -170,7 +174,11 @@ public class DoorTileEntity extends TileEntity
 
 	public boolean setCentered(boolean centered)
 	{
+		if (centeredInitialized && this.centered == centered)
+			return centered;
+
 		this.centered = centered;
+		centeredInitialized = true;
 		if (worldObj != null)
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		return centered;
@@ -346,10 +354,13 @@ public class DoorTileEntity extends TileEntity
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
-		//if (descriptor == null)
 		descriptor = new DoorDescriptor(nbt);
-		setDoorState(DoorState.values()[nbt.getInteger("state")]);
-		setCentered(nbt.getBoolean("centered"));
+		state = DoorState.values()[nbt.getInteger("state")];
+		centered = nbt.getBoolean("centered");
+		centeredInitialized = true;
+
+		if (!applyingDescriptionPacket)
+			moving = false;
 	}
 
 	@Override
@@ -373,7 +384,64 @@ public class DoorTileEntity extends TileEntity
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
 	{
-		this.readFromNBT(packet.func_148857_g());
+		NBTTagCompound previousValues = new NBTTagCompound();
+		writeToNBT(previousValues);
+		DoorState previousState = state;
+		boolean wasMoving = moving;
+		Material previousMaterial = descriptor != null ? descriptor.getMaterial() : null;
+
+		applyingDescriptionPacket = true;
+		try
+		{
+			readFromNBT(packet.func_148857_g());
+		}
+		finally
+		{
+			applyingDescriptionPacket = false;
+		}
+
+		applyPacketMovement(previousState, wasMoving);
+
+		NBTTagCompound currentValues = new NBTTagCompound();
+		writeToNBT(currentValues);
+		Material currentMaterial = descriptor != null ? descriptor.getMaterial() : null;
+		boolean visualStateChanged = !descriptionPacketReceived
+				|| !previousValues.equals(currentValues)
+				|| previousMaterial != currentMaterial;
+		descriptionPacketReceived = true;
+
+		if (updateClientAppearance() || visualStateChanged)
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+
+	private void applyPacketMovement(DoorState previousState, boolean wasMoving)
+	{
+		boolean transition = state == DoorState.OPENING || state == DoorState.CLOSING;
+		if (!transition)
+		{
+			moving = false;
+			return;
+		}
+
+		if (state != previousState || !wasMoving)
+		{
+			if (wasMoving)
+			{
+				long relativeStart = timer.elapsedTime() - Timer.tickToTime(getOpeningTime());
+				timer.setRelativeStart(relativeStart);
+			}
+			else
+			{
+				timer.start();
+			}
+		}
+		moving = true;
+	}
+
+	/** Allows subclasses to fold derived client appearance changes into the packet's single render request. */
+	protected boolean updateClientAppearance()
+	{
+		return false;
 	}
 
 	//#end NBT/Network
