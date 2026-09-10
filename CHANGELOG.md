@@ -1,3 +1,16 @@
+# Reduce trapdoor ambient occlusion allocation (Opportunity #8)
+
+## Changed
+
+- Added caller-owned AO sample-offset calculation while preserving the allocating APIs for unrelated renderers and retaining the original coordinates, rounding, and face-offset rules.
+- Cached immutable stationary trapdoor sample offsets in a bounded movement, orientation, mounting-position, and endpoint-pose table; final-geometry signatures replace affected entries when model geometry changes or renderer initialization reloads the models.
+- Reused depth-isolated scratch matrices for moving and unsupported trapdoor poses so nested rendering cannot overwrite active offsets, while world color and brightness values continue to be sampled for every rendered vertex and frame.
+- Preserved the opportunity #7 direct movement transforms and added no GL calls, world references, tile entity references, cached lighting values, or changes to animation timing and render parameters.
+
+## Verification required
+
+- Runtime performance and visual behavior require end-user development feedback. Rotating and sliding motion, both mounting positions, endpoint shading, Angelica rendering, sunlight and local-light responses, AO-disabled rendering, and damage overlays were source-reviewed but not game-launched under this change.
+
 # Reduce fence gate and trapdoor render allocations (Opportunity #7)
 
 ## Changed

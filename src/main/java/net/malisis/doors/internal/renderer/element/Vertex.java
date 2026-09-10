@@ -425,32 +425,54 @@ public class Vertex
 	public int[][] getAoMatrix(ForgeDirection offset)
 	{
 		int[][] a = new int[3][3];
+		getAoMatrix(offset, a);
+		return a;
+	}
+
+	/**
+	 * Calculates AO sample offsets into caller-owned storage.
+	 *
+	 * @param offset the face offset
+	 * @param aoMatrix three reusable coordinate rows
+	 */
+	public void getAoMatrix(ForgeDirection offset, int[][] aoMatrix)
+	{
+		if (aoMatrix == null || aoMatrix.length < 3)
+			throw new IllegalArgumentException("AO matrix must contain three coordinate rows");
+
+		for (int i = 0; i < 3; i++)
+		{
+			if (aoMatrix[i] == null || aoMatrix[i].length < 3)
+				throw new IllegalArgumentException("Each AO matrix row must contain three coordinates");
+
+			aoMatrix[i][0] = 0;
+			aoMatrix[i][1] = 0;
+			aoMatrix[i][2] = 0;
+		}
 
 		if (offset == ForgeDirection.WEST || offset == ForgeDirection.EAST)
 		{
-			a[0][0] = a[1][0] = a[2][0] = offset.offsetX;
-			a[1][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
-			a[2][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
-			a[0][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
-			a[1][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[0][0] = aoMatrix[1][0] = aoMatrix[2][0] = offset.offsetX;
+			aoMatrix[1][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[2][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[0][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[1][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
 		}
 		else if (offset == ForgeDirection.UP || offset == ForgeDirection.DOWN)
 		{
-			a[0][1] = a[1][1] = a[2][1] = offset.offsetY;
-			a[1][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
-			a[2][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
-			a[0][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
-			a[1][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[0][1] = aoMatrix[1][1] = aoMatrix[2][1] = offset.offsetY;
+			aoMatrix[1][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[2][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[0][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[1][2] += Math.round(z * 2 - 1); // -1 if 0, 1 if 1;
 		}
 		else if (offset == ForgeDirection.NORTH || offset == ForgeDirection.SOUTH)
 		{
-			a[0][2] = a[1][2] = a[2][2] = offset.offsetZ;
-			a[1][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
-			a[2][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
-			a[0][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
-			a[1][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[0][2] = aoMatrix[1][2] = aoMatrix[2][2] = offset.offsetZ;
+			aoMatrix[1][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[2][0] += Math.round(x * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[0][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
+			aoMatrix[1][1] += Math.round(y * 2 - 1); // -1 if 0, 1 if 1;
 		}
-
-		return a;
 	}
 }

@@ -375,11 +375,23 @@ public class Face implements ITransformable.Translate, ITransformable.Rotate
 	public int[][][] calculateAoMatrix(ForgeDirection offset)
 	{
 		int[][][] aoMatrix = new int[vertexes.length][3][3];
+		calculateAoMatrix(offset, aoMatrix);
+		return aoMatrix;
+	}
+
+	/**
+	 * Calculates AO sample offsets into caller-owned storage. No sampled world light is retained in this matrix.
+	 *
+	 * @param offset the face offset
+	 * @param aoMatrix reusable storage with one three-row matrix per vertex
+	 */
+	public void calculateAoMatrix(ForgeDirection offset, int[][][] aoMatrix)
+	{
+		if (aoMatrix == null || aoMatrix.length < vertexes.length)
+			throw new IllegalArgumentException("AO matrix must contain storage for every face vertex");
 
 		for (int i = 0; i < vertexes.length; i++)
-			aoMatrix[i] = vertexes[i].getAoMatrix(offset);
-
-		return aoMatrix;
+			vertexes[i].getAoMatrix(offset, aoMatrix[i]);
 	}
 
 	/**
