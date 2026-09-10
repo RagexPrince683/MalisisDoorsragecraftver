@@ -32,6 +32,7 @@ import net.malisis.doors.internal.renderer.animation.AnimationRenderer;
 import net.malisis.doors.internal.renderer.element.Shape;
 import net.malisis.doors.internal.renderer.element.shape.Cube;
 import net.malisis.doors.internal.renderer.model.MalisisModel;
+import net.malisis.doors.internal.util.Timer;
 import net.malisis.doors.MalisisDoorsSettings;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.block.Door;
@@ -202,6 +203,20 @@ public class DoorRenderer extends MalisisRenderer
 
 		if (tileEntity.isCentered())
 			model.translate(0, 0, 0.5F - Door.DOOR_WIDTH / 2);
+	}
+
+	/** Returns the original timer's linear completion once for the current render. */
+	protected float getMovementProgress()
+	{
+		if (!tileEntity.isMoving())
+			return 1;
+
+		long duration = Timer.tickToTime(tileEntity.getOpeningTime());
+		if (duration <= 0)
+			return 0;
+
+		float progress = (float) (System.currentTimeMillis() - tileEntity.getTimer().getStart()) / duration;
+		return Math.max(0, Math.min(1, progress));
 	}
 
 	protected void renderTileEntity()

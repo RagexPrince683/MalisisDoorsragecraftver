@@ -33,7 +33,7 @@ import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.internal.util.AABBUtils;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;
-import net.malisis.doors.door.movement.IDoorMovement;
+import net.malisis.doors.door.movement.IOptimizedDoorMovement;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
 import net.malisis.doors.trapdoor.block.TrapDoor;
 import net.minecraft.util.AxisAlignedBB;
@@ -42,7 +42,7 @@ import net.minecraft.util.AxisAlignedBB;
  * @author Ordinastie
  *
  */
-public class SlidingTrapDoorMovement implements IDoorMovement
+public class SlidingTrapDoorMovement implements IOptimizedDoorMovement
 {
 	@Override
 	public AxisAlignedBB getBoundingBox(DoorTileEntity tileEntity, boolean topBlock, BoundingBoxType type)
@@ -84,6 +84,13 @@ public class SlidingTrapDoorMovement implements IDoorMovement
 		translation.reversed(tileEntity.getState() == DoorState.CLOSING || tileEntity.getState() == DoorState.CLOSED);
 		translation.forTicks(tileEntity.getDescriptor().getOpeningTime());
 		return translation;
+	}
+
+	@Override
+	public void applyPose(DoorTileEntity tileEntity, MalisisModel model, float progress)
+	{
+		float poseProgress = tileEntity.getState() == DoorState.CLOSING || tileEntity.getState() == DoorState.CLOSED ? 1 - progress : progress;
+		model.getShape("shape").translateVertices(0, 0, (1 - Door.DOOR_WIDTH) * poseProgress);
 	}
 
 	@Override

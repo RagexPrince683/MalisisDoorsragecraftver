@@ -1,3 +1,17 @@
+# Reduce fence gate and trapdoor render allocations (Opportunity #7)
+
+## Changed
+
+- Added allocation-free CPU pose paths for fence gate rotation, hinged trapdoor rotation, and sliding trapdoor translation while retaining the original timer, linear easing, duration, reversal behavior, pivots, and endpoints.
+- Reset renderer-owned models to their immutable stored vertex state for every render, then apply direct vertex poses with one sine/cosine calculation per distinct angle; unsupported movement implementations continue through the existing animation renderer.
+- Cached fence gate render pairing as bounded tile-owned coordinates and hinge selection, without retaining neighboring tile entity references or changing gameplay pairing searches.
+- Invalidated render pairing on placement, neighbor notification, metadata/direction observation, door-state transitions, synchronized packets, validation, invalidation, and chunk unload; cache rebuilds inspect only already-loaded positions.
+- Preserved the shared renderer lifecycle and opportunity #6 GL cleanup by keeping all pose work inside the existing CPU model path and adding no GL state changes or GPU resources.
+
+## Verification required
+
+- Runtime performance and visual behavior require end-user development feedback. In particular, Angelica rendering, mid-animation reversal, paired gate selection at chunk boundaries, camouflage, wall offsets, damage overlays, and both trapdoor mounting positions were source-reviewed but not game-launched under this change.
+
 # Fix shared renderer GL state leaks and cleanup failures
 
 ## Fixed
