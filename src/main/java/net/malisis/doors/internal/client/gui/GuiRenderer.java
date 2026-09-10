@@ -24,6 +24,7 @@
 
 package net.malisis.doors.internal.client.gui;
 
+import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.internal.client.gui.component.UIComponent;
 import net.malisis.doors.internal.client.gui.component.container.UIContainer;
 import net.malisis.doors.internal.client.gui.component.decoration.UITooltip;
@@ -81,7 +82,7 @@ public class GuiRenderer extends MalisisRenderer
 	 */
 	public GuiRenderer()
 	{
-		defaultGuiTexture = new GuiTexture(new ResourceLocation("malisiscore", "textures/gui/gui.png"), 300, 100);
+		defaultGuiTexture = new GuiTexture(new ResourceLocation(MalisisDoors.modid, "textures/gui/gui.png"), 300, 100);
 	}
 
 	/**
