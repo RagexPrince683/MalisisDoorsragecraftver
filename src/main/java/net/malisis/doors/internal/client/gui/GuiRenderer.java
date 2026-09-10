@@ -167,36 +167,29 @@ public class GuiRenderer extends MalisisRenderer
 		t = Tessellator.instance;
 		_initialize();
 		this.renderType = renderType;
+		RenderScope scope = beginRenderScope();
+		pushRenderState(scope);
 
 		currentTexture = null;
-		bindDefaultTexture();
 
 		if (ignoreScale)
 		{
-			GL11.glPushMatrix();
+			pushModelView(scope);
 			GL11.glScalef(1F / scaleFactor, 1F / scaleFactor, 1);
 		}
 
 		enableBlending();
 
 		startDrawing();
+		bindDefaultTexture();
 	}
 
 	@Override
 	public void clean()
 	{
-		try
-		{
-			draw();
-
-			if (ignoreScale)
-				GL11.glPopMatrix();
-		}
-		finally
-		{
-			reset();
-			t = null;
-		}
+		currentComponent = null;
+		currentTexture = null;
+		super.clean();
 	}
 
 	/**
@@ -218,9 +211,13 @@ public class GuiRenderer extends MalisisRenderer
 	{
 		if (texture == null || texture == currentTexture)
 			return;
+		if (ownsTessellatorBatch() && isDrawing())
+			draw();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture.getResourceLocation());
 		currentTexture = texture;
+		if (hasRenderScope() && !isDrawing())
+			startDrawing();
 	}
 
 	/**
@@ -265,11 +262,35 @@ public class GuiRenderer extends MalisisRenderer
 			return;
 
 		set(mouseX, mouseY, partialTick);
-		prepare(RenderType.GUI);
-
-		container.draw(this, mouseX, mouseY, partialTick);
-
-		clean();
+		Throwable failure = null;
+		try
+		{
+			prepare(RenderType.GUI);
+			container.draw(this, mouseX, mouseY, partialTick);
+		}
+		catch (Throwable throwable)
+		{
+			failure = throwable;
+			markRenderScopeFailed();
+			throwUnchecked(throwable);
+		}
+		finally
+		{
+			if (hasRenderScope())
+			{
+				try
+				{
+					clean();
+				}
+				catch (Throwable cleanupFailure)
+				{
+					if (failure != null)
+						failure.addSuppressed(cleanupFailure);
+					else
+						throwUnchecked(cleanupFailure);
+				}
+			}
+		}
 	}
 
 	/**
@@ -337,11 +358,25 @@ public class GuiRenderer extends MalisisRenderer
 	 */
 	public void drawTooltip(UITooltip tooltip)
 	{
-		if (tooltip != null)
+		if (tooltip == null)
+			return;
+
+		boolean standalone = !hasRenderScope();
+		if (standalone)
+			prepare(RenderType.GUI);
+		try
 		{
-			t.startDrawingQuads();
 			tooltip.draw(this, mouseX, mouseY, partialTick);
-			t.draw();
+		}
+		catch (Throwable throwable)
+		{
+			markRenderScopeFailed();
+			throwUnchecked(throwable);
+		}
+		finally
+		{
+			if (standalone)
+				clean();
 		}
 	}
 
@@ -502,7 +537,7 @@ public class GuiRenderer extends MalisisRenderer
 		if (format != null)
 			label = format + label;
 
-		t.draw();
+		draw();
 		RenderHelper.enableGUIStandardItemLighting();
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 
@@ -515,7 +550,6 @@ public class GuiRenderer extends MalisisRenderer
 
 		currentTexture = null;
 		bindDefaultTexture();
-		t.startDrawingQuads();
 	}
 
 	/**
@@ -528,11 +562,26 @@ public class GuiRenderer extends MalisisRenderer
 		if (itemStack == null)
 			return;
 
-		itemRenderer.zLevel = 100;
-		t.startDrawingQuads();
-		drawItemStack(itemStack, mouseX - 8, mouseY - 8, null, itemStack.stackSize == 0 ? EnumChatFormatting.YELLOW : null, false);
-		t.draw();
-		itemRenderer.zLevel = 0;
+		boolean standalone = !hasRenderScope();
+		if (standalone)
+			prepare(RenderType.GUI);
+		try
+		{
+			itemRenderer.zLevel = 100;
+			drawItemStack(itemStack, mouseX - 8, mouseY - 8, null, itemStack.stackSize == 0 ? EnumChatFormatting.YELLOW : null, false);
+			draw();
+		}
+		catch (Throwable throwable)
+		{
+			markRenderScopeFailed();
+			throwUnchecked(throwable);
+		}
+		finally
+		{
+			itemRenderer.zLevel = 0;
+			if (standalone)
+				clean();
+		}
 	}
 
 	/**

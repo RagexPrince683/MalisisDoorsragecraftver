@@ -35,7 +35,6 @@ import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
 import net.malisis.doors.internal.util.TileEntityUtils;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -196,11 +195,14 @@ public class GarageDoorTileEntity extends DoorTileEntity
 		if (world == null || !world.blockExists(x, y, z))
 			return;
 
-		for (int scanY = 0; scanY < world.getActualHeight(); scanY++)
+		for (Object entry : world.loadedTileEntityList)
 		{
-			TileEntity tileEntity = world.getTileEntity(x, scanY, z);
-			if (tileEntity instanceof GarageDoorTileEntity)
-				((GarageDoorTileEntity) tileEntity).invalidateStructureCache();
+			if (!(entry instanceof GarageDoorTileEntity))
+				continue;
+
+			GarageDoorTileEntity door = (GarageDoorTileEntity) entry;
+			if (!door.isInvalid() && door.xCoord == x && door.zCoord == z)
+				door.invalidateStructureCache();
 		}
 	}
 
