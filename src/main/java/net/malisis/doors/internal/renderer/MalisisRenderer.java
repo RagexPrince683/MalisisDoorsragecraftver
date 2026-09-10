@@ -92,6 +92,18 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	private static Method tessellatorResetMethod;
 	/** State recorded for the active render scope. Renderer callbacks are not expected to overlap. */
 	private RenderScope renderScope;
+	/** Worker construction marker. Worker renderers must never consume render IDs or register themselves. */
+	private static final ThreadLocal<Boolean> constructingChunkWorker = new ThreadLocal<Boolean>();
+	/** Mutable chunk state belongs to a renderer instance used only by the current thread and nesting level. */
+	private final ThreadLocal<ChunkRendererPool> chunkRenderers;
+	private final boolean chunkWorker;
+	private static final int MAX_RETAINED_CHUNK_RENDERERS = 4;
+
+	private static class ChunkRendererPool
+	{
+		private final ArrayList<MalisisRenderer> renderers = new ArrayList<MalisisRenderer>();
+		private int depth;
+	}
 
 	private static class RenderScope
 	{
@@ -108,8 +120,8 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	private boolean initialized = false;
 	/** Id of this {@link MalisisRenderer}. */
 	protected int renderId = -1;
-	/** Tessellator reference. */
-	protected Tessellator t = Tessellator.instance;
+	/** Tessellator for the active callback only. Never retained between callbacks. */
+	protected Tessellator t;
 	/** Current world reference (ISBRH/TESR/IRWL). */
 	protected IBlockAccess world;
 	/** RenderBlocks reference (ISBRH). */
@@ -168,8 +180,17 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	 */
 	public MalisisRenderer()
 	{
-		this.renderId = RenderingRegistry.getNextAvailableRenderId();
-		this.t = Tessellator.instance;
+		chunkWorker = Boolean.TRUE.equals(constructingChunkWorker.get());
+		chunkRenderers = chunkWorker ? null : new ThreadLocal<ChunkRendererPool>()
+		{
+			@Override
+			protected ChunkRendererPool initialValue()
+			{
+				return new ChunkRendererPool();
+			}
+		};
+		if (!chunkWorker)
+			renderId = RenderingRegistry.getNextAvailableRenderId();
 	}
 
 	/**
@@ -344,6 +365,56 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer)
 	{
+		if (!chunkWorker)
+			return renderWorldBlockIsolated(world, x, y, z, block, modelId, renderer);
+
+		return renderWorldBlockCallback(world, x, y, z, block, renderer);
+	}
+
+	private boolean renderWorldBlockIsolated(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer)
+	{
+		ChunkRendererPool pool = chunkRenderers.get();
+		int depth = pool.depth++;
+		MalisisRenderer worker = null;
+		try
+		{
+			if (depth < pool.renderers.size())
+				worker = pool.renderers.get(depth);
+			else
+			{
+				worker = createChunkWorker();
+				if (depth < MAX_RETAINED_CHUNK_RENDERERS)
+					pool.renderers.add(worker);
+			}
+			return worker.renderWorldBlockCallback(world, x, y, z, block, renderer);
+		}
+		finally
+		{
+			pool.depth--;
+		}
+	}
+
+	private MalisisRenderer createChunkWorker()
+	{
+		constructingChunkWorker.set(Boolean.TRUE);
+		try
+		{
+			MalisisRenderer worker = getClass().asSubclass(MalisisRenderer.class).getDeclaredConstructor().newInstance();
+			worker.renderId = renderId;
+			return worker;
+		}
+		catch (ReflectiveOperationException exception)
+		{
+			throw new IllegalStateException("Could not create isolated chunk renderer for " + getClass().getName(), exception);
+		}
+		finally
+		{
+			constructingChunkWorker.remove();
+		}
+	}
+
+	private boolean renderWorldBlockCallback(IBlockAccess world, int x, int y, int z, Block block, RenderBlocks renderer)
+	{
 		set(world, block, x, y, z, world.getBlockMetadata(x, y, z));
 		tileEntity = world.getTileEntity(x, y, z);
 		renderBlocks = renderer;
@@ -466,6 +537,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	private void renderScope(RenderType type, double... data)
 	{
 		Throwable failure = null;
+		t = Tessellator.instance;
 		try
 		{
 			prepare(type, data);
@@ -492,6 +564,10 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 					failure.addSuppressed(cleanupFailure);
 				else
 					throwUnchecked(cleanupFailure);
+			}
+			finally
+			{
+				t = null;
 			}
 		}
 	}
@@ -535,6 +611,8 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	 */
 	public void prepare(RenderType renderType, double... data)
 	{
+		if (t == null)
+			t = Tessellator.instance;
 		_initialize();
 		vertexDrawn = false;
 		this.renderType = renderType;
@@ -736,6 +814,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 			}
 			renderScope = null;
 			reset();
+			t = null;
 		}
 		if (failure != null)
 			throwUnchecked(failure);

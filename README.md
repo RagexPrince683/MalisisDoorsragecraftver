@@ -44,6 +44,23 @@ and their contents are not included in the MalisisDoors output JAR.
 
 ## Shared renderer state ownership
 
+The renderer registered with Forge contains no mutable chunk render data. Each
+chunk callback is delegated to a bounded, nesting-aware pool of renderer
+instances local to the compilation thread. A worker is constructed without
+allocating a render ID and receives the registered ID; it is never registered
+as an ISBRH, TESR, or item renderer. Consequently its coordinates, world and
+tile references, `RenderBlocks`, models, shapes, parameters, vertices, AO
+scratch storage, animation helpers, and texture override are not shared with
+another compilation thread or a nested callback. Workers retain only four
+nesting levels per thread; deeper nesting uses callback-lifetime instances.
+Every callback clears live world, tile, block, item, and `RenderBlocks`
+references on exit. Model initialization remains lazy on each isolated worker,
+so resource-derived geometry follows the same initialization and resource
+lifecycle as the pre-existing registered renderers rather than introducing a
+second cache lifecycle.
+
+The active `Tessellator.instance` is resolved when a render callback begins and
+released when it ends; constructors and field initializers do not capture it.
 The shared renderer appends chunk geometry to Forge's caller-owned tessellator
 batch and only changes the batch translation for that callback. Inventory,
 held/dropped item, tile-entity, and world-last callbacks own the batches they
@@ -72,10 +89,31 @@ OpenGL bypass or hard renderer dependency is used.
 | Animated forcefield texture transform | Explicit texture-matrix push/pop |
 | Damage-overlay color, blend, alpha test, and vertex settings | Nested overlay attributes and a completed or discarded overlay-owned batch |
 
-No Angelica artifact or pinned Angelica version is present in this repository
-or its local development-mod directory, so its exact redirect and state-cache
-implementation could not be inspected here. Runtime visual behavior—especially
-with Angelica installed—requires end-user development feedback.
+No Angelica artifact or pinned Angelica version is present in this repository,
+the Gradle dependency declarations, or its local development-mod directory.
+Therefore no installed Angelica version, tessellator redirection implementation,
+chunk compiler implementation, `ThreadSafeISBRH`, or `ThreadSafeISBRHFactory`
+API was available to inspect. This change deliberately adds no annotation,
+reflection against guessed Angelica names, or hard dependency. All renderers
+remain on Angelica's ordinary non-thread-safe compatibility path until the
+actual installed API and their block-specific world reads can be verified.
+
+| Audited registered renderer | Isolated chunk state | Angelica execution path | Reason not declared thread-safe |
+| --- | --- | --- | --- |
+| `DoorRenderer` | Per-thread/per-nesting worker; staged hybrid shape is worker-local | Compatibility path | Hybrid upload-completion API is unavailable and the feature remains safety-gated |
+| `FenceGateRenderer` | Worker-local mutable model, parameters, animation helper, and tile snapshot references | Compatibility path | Pair/camouflage world reads need validation against an actual Angelica compiler |
+| `TrapDoorRenderer` | Worker-local models, parameters, AO cache, and depth-isolated AO scratch arrays | Compatibility path | AO/world sampling needs validation against an actual Angelica compiler |
+| `MixedBlockRenderer` | Worker-local shapes, parameters, selected blocks, metadata, and tile references | Compatibility path | Delegated block behavior and mutable block bounds are not proven concurrently safe |
+| `VanishingBlockRenderer` | Worker-local random generator and base callback state | Compatibility path | Delegated `RenderBlocks` calls and live copied tile state are not proven concurrently safe |
+| `RustyHatchRenderer` | Worker-local model, shapes, parameters, animation helper, and tile references | Compatibility path | Its chunk/TESR split and block-specific reads are not verified with Angelica |
+| `RustyLadderRenderer` | Worker-local mutable ladder geometry and parameters | Compatibility path | No suitable installed Angelica opt-in API is available |
+| `BigDoorRenderer` | Worker-local model, shapes, parameters, animation helper, and tile references | Compatibility path | Large-door tile/world access is not verified with Angelica |
+
+This isolation and callback-local tessellator ownership provide the required
+foundation for the future hybrid door rendering work described below, but do
+not enable that rendering or threaded execution in this batch. Runtime
+compatibility and visual behavior require end-user development feedback with
+the user's actual Angelica build.
 # Standalone runtime architecture
 
 MalisisDoors includes only the portions of MalisisCore that its 1.7.10 gameplay

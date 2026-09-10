@@ -41,6 +41,7 @@ import net.malisis.doors.internal.renderer.font.MalisisFont;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -163,6 +164,7 @@ public class GuiRenderer extends MalisisRenderer
 	@Override
 	public void prepare(RenderType renderType, double... data)
 	{
+		t = Tessellator.instance;
 		_initialize();
 		this.renderType = renderType;
 
@@ -183,12 +185,18 @@ public class GuiRenderer extends MalisisRenderer
 	@Override
 	public void clean()
 	{
-		draw();
+		try
+		{
+			draw();
 
-		if (ignoreScale)
-			GL11.glPopMatrix();
-
-		reset();
+			if (ignoreScale)
+				GL11.glPopMatrix();
+		}
+		finally
+		{
+			reset();
+			t = null;
+		}
 	}
 
 	/**
