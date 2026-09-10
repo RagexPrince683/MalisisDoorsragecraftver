@@ -1,3 +1,12 @@
+# Fix Door Factory and GUI texture resolution
+
+## Fixed
+
+- Pointed the standalone GUI renderer at the GUI atlas now owned by the
+  `malisisdoors` resource namespace.
+- Registered the Door Factory front and side icons explicitly and retained the
+  side icon as the vanilla block-item fallback used in inventories and hands.
+
 # Fix curtain, Door Factory, and standalone GUI textures
 
 ## Fixed

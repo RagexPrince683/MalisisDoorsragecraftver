@@ -70,3 +70,11 @@ owns rendering and animation; invisible, persistent proxy blocks occupy the
 remaining 4-by-5 support volume and delegate collision, selection, activation,
 and removal to that origin. MalisisDoors does not install a loading plugin or
 transform Minecraft classes.
+
+## Standalone resources
+
+The vendored GUI implementation loads its atlas from
+`assets/malisisdoors/textures/gui/gui.png`; MalisisCore is not required at
+runtime. The Door Factory's vanilla `ItemBlock` uses the existing
+`malisisdoors:door_factory` and `malisisdoors:door_factory_side` block-atlas
+icons, so it does not require a duplicate item texture.

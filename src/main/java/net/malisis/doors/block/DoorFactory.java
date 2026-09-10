@@ -51,6 +51,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 {
+	private IIcon sideIcon;
 	private IIcon frontIcon;
 
 	public DoorFactory()
@@ -66,8 +67,9 @@ public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister)
 	{
-		this.blockIcon = iconRegister.registerIcon(getTextureName());
-		this.frontIcon = iconRegister.registerIcon(MalisisDoors.modid + ":door_factory");
+		sideIcon = iconRegister.registerIcon(MalisisDoors.modid + ":door_factory_side");
+		frontIcon = iconRegister.registerIcon(MalisisDoors.modid + ":door_factory");
+		blockIcon = sideIcon;
 	}
 
 	@Override
@@ -75,7 +77,8 @@ public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 	{
 		if ((metadata != 0 && side == metadata) || (metadata == 0 && side == 3))
 			return frontIcon;
-		return blockIcon;
+
+		return sideIcon;
 	}
 
 	@Override
