@@ -1,3 +1,13 @@
+# Restore Door Factory block-item rendering
+
+## Fixed
+
+- Pinned the Door Factory to vanilla render type `0`, keeping its registered
+  `ItemBlock` on Minecraft 1.7.10's three-dimensional `RenderBlocks` inventory
+  and held-item path instead of the flat item-icon fallback.
+- Kept the existing `door_factory` registry name and block-atlas front and side
+  textures unchanged.
+
 # Fix Door Factory and GUI texture resolution
 
 ## Fixed

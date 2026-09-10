@@ -77,4 +77,6 @@ The vendored GUI implementation loads its atlas from
 `assets/malisisdoors/textures/gui/gui.png`; MalisisCore is not required at
 runtime. The Door Factory's vanilla `ItemBlock` uses the existing
 `malisisdoors:door_factory` and `malisisdoors:door_factory_side` block-atlas
-icons, so it does not require a duplicate item texture.
+icons and render type `0`. Minecraft therefore draws it through the normal
+three-dimensional `RenderBlocks` inventory and held-item path, without a
+duplicate item texture or a custom item renderer.

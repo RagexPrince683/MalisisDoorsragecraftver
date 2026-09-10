@@ -82,6 +82,12 @@ public class DoorFactory extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
+	public int getRenderType()
+	{
+		return 0;
+	}
+
+	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemStack)
 	{
 		int side = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
