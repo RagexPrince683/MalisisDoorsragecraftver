@@ -139,7 +139,7 @@ public class BigDoor extends MalisisBlock implements ITileEntityProvider
 		return true;
 	}
 
-	@Override
+
 	public AxisAlignedBB[] getPlacedBoundingBox(IBlockAccess world, int x, int y, int z, int side, EntityPlayer player, ItemStack itemStack)
 	{
 		ForgeDirection dir = EntityUtils.getEntityFacing(player);
