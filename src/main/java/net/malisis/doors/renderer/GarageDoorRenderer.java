@@ -24,8 +24,9 @@
 
 package net.malisis.doors.renderer;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import net.malisis.doors.internal.renderer.MalisisRenderer;
 import net.malisis.doors.internal.renderer.RenderParameters;
@@ -42,6 +43,8 @@ import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.entity.GarageDoorTileEntity;
 import net.minecraft.client.renderer.DestroyBlockProgress;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 
 /**
  * @author Ordinastie
@@ -54,9 +57,21 @@ public class GarageDoorRenderer extends MalisisRenderer
 	protected boolean opened;
 	protected boolean reversed;
 	protected boolean topBlock;
-	protected Set<GarageDoorTileEntity> childDoors = new HashSet<>();
+	protected List<ChunkCoordinates> segmentPositions = Collections.emptyList();
+	protected List<Transformation> openingAnimations = Collections.emptyList();
+	protected List<Transformation> closingAnimations = Collections.emptyList();
+	protected int animationHeight = -1;
 
 	protected AnimationRenderer ar = new AnimationRenderer();
+
+	@Override
+	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTick)
+	{
+		if (!(tileEntity instanceof GarageDoorTileEntity) || !((GarageDoorTileEntity) tileEntity).isTopDoor())
+			return;
+
+		super.renderTileEntityAt(tileEntity, x, y, z, partialTick);
+	}
 
 	@Override
 	protected void initialize()
@@ -111,48 +126,62 @@ public class GarageDoorRenderer extends MalisisRenderer
 
 	protected void renderTileEntity()
 	{
-		int t = GarageDoorTileEntity.maxOpenTime;
 		//set the start timer
 		ar.setStartTime(tileEntity.getTimer().getStart());
 
-		//create door list from childs + top
-		childDoors.clear();
-		tileEntity.addChildDoors(childDoors);
-		for (GarageDoorTileEntity te : childDoors)
+		segmentPositions = tileEntity.getSegmentPositions();
+		ensureAnimations(segmentPositions.size());
+		for (int index = 0; index < segmentPositions.size(); index++)
 		{
+			ChunkCoordinates position = segmentPositions.get(index);
 			shape.resetState();
 			shape.rotate(-90 * tileEntity.getDirection(), 0, 1, 0);
 			shape.translate(0.5F - Door.DOOR_WIDTH / 2, 0, 0);
 
-			y = te.yCoord;
-			int delta = tileEntity.yCoord - te.yCoord;
-			int delta2 = childDoors.size() - (delta + 1);
+			y = position.posY;
+			int delta = tileEntity.yCoord - position.posY;
 
 			if (delta == 0)
 				blockMetadata |= Door.FLAG_TOPBLOCK;
 			else
 				blockMetadata &= ~Door.FLAG_TOPBLOCK;
 
-			Transformation verticalAnim = new Translation(0, -delta, 0, 0, 0, 0).forTicks(t * delta, 0);
-			//@formatter:off
-			Transformation topRotate = new ParallelTransformation(
-					new Translation(0, 1, 0).forTicks(t, 0),
-					new Rotation(0, -90).aroundAxis(0, 0, 1).offset(-0.5F, -0.5F, 0).forTicks(t, 0)
-			);
-			//@formatter:on
-			Transformation horizontalAnim = new Translation(0, 0, 0, 0, delta2, 0).forTicks(t * delta2, 0);
-
-			Transformation chained = new ChainedTransformation(verticalAnim, topRotate, horizontalAnim);
-			if (tileEntity.getState() == DoorState.CLOSING || tileEntity.getState() == DoorState.CLOSED)
-				chained.reversed(true);
-
 			rp.brightness.set(block.getMixedBrightnessForBlock(world, x, y, z));
 
-			ar.animate(shape, chained);
+			boolean closing = tileEntity.getState() == DoorState.CLOSING || tileEntity.getState() == DoorState.CLOSED;
+			ar.animate(shape, closing ? closingAnimations.get(index) : openingAnimations.get(index));
 			drawShape(shape, rp);
 		}
 		//restore correct y coord
 		y = tileEntity.yCoord;
+	}
+
+	private void ensureAnimations(int height)
+	{
+		if (animationHeight == height)
+			return;
+
+		List<Transformation> opening = new ArrayList<>();
+		List<Transformation> closing = new ArrayList<>();
+		for (int delta = 0; delta < height; delta++)
+		{
+			opening.add(createSegmentAnimation(delta, height, false));
+			closing.add(createSegmentAnimation(delta, height, true));
+		}
+		openingAnimations = Collections.unmodifiableList(opening);
+		closingAnimations = Collections.unmodifiableList(closing);
+		animationHeight = height;
+	}
+
+	private Transformation createSegmentAnimation(int delta, int height, boolean reversed)
+	{
+		int ticks = GarageDoorTileEntity.maxOpenTime;
+		int horizontalDistance = height - delta - 1;
+		Transformation vertical = new Translation(0, -delta, 0, 0, 0, 0).forTicks(ticks * delta, 0);
+		Transformation rotate = new ParallelTransformation(new Translation(0, 1, 0).forTicks(ticks, 0),
+				new Rotation(0, -90).aroundAxis(0, 0, 1).offset(-0.5F, -0.5F, 0).forTicks(ticks, 0));
+		Transformation horizontal = new Translation(0, 0, 0, 0, horizontalDistance, 0).forTicks(ticks * horizontalDistance, 0);
+		return new ChainedTransformation(vertical, rotate, horizontal).reversed(reversed);
 	}
 
 	@Override
@@ -173,9 +202,10 @@ public class GarageDoorRenderer extends MalisisRenderer
 		if (dbp.getPartialBlockX() == x && dbp.getPartialBlockY() == y && dbp.getPartialBlockZ() == z)
 			return true;
 
-		for (GarageDoorTileEntity te : childDoors)
+		for (ChunkCoordinates position : segmentPositions)
 		{
-			if (dbp.getPartialBlockX() == te.xCoord && dbp.getPartialBlockY() == te.yCoord && dbp.getPartialBlockZ() == te.zCoord)
+			if (dbp.getPartialBlockX() == position.posX && dbp.getPartialBlockY() == position.posY
+					&& dbp.getPartialBlockZ() == position.posZ)
 				return true;
 		}
 		return false;

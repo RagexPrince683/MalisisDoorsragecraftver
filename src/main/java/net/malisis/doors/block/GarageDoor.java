@@ -43,6 +43,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -94,12 +95,38 @@ public class GarageDoor extends Block implements ITileEntityProvider
 		}
 
 		world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
+		GarageDoorTileEntity.invalidateColumn(world, x, y, z);
 		setBlockBoundsBasedOnState(world, x, y, z);
+	}
+
+	@Override
+	public void onBlockAdded(World world, int x, int y, int z)
+	{
+		super.onBlockAdded(world, x, y, z);
+		GarageDoorTileEntity.invalidateColumn(world, x, y, z);
+	}
+
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block block, int metadata)
+	{
+		GarageDoorTileEntity.invalidateColumn(world, x, y, z);
+		super.breakBlock(world, x, y, z, block, metadata);
+		GarageDoorTileEntity.invalidateColumn(world, x, y, z);
+	}
+
+	@Override
+	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis)
+	{
+		GarageDoorTileEntity.invalidateColumn(world, x, y, z);
+		boolean rotated = super.rotateBlock(world, x, y, z, axis);
+		GarageDoorTileEntity.invalidateColumn(world, x, y, z);
+		return rotated;
 	}
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block)
 	{
+		GarageDoorTileEntity.invalidateColumn(world, x, y, z);
 		GarageDoorTileEntity te = TileEntityUtils.getTileEntity(GarageDoorTileEntity.class, world, x, y, z);
 		if (te == null)
 			return;

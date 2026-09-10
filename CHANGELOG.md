@@ -1,3 +1,12 @@
+# Cache garage door structures and animations
+
+## Changed
+
+- Cached each loaded garage door column's controller coordinate, ordered segment coordinates, height, and conservative movement render bounds without retaining tile entity references.
+- Invalidated garage door structure data for placement, removal, replacement, rotation, neighbor, synchronization, tile invalidation, and chunk lifecycle changes, rebuilding only from loaded blocks with bounded iterative traversal.
+- Reused cached column data for opening duration, rendering, damage selection, and render bounds, and reused per-height segment animation transformations instead of allocating them in every segment render.
+- Rejected non-controller garage door tile renders before the shared renderer binds textures or initializes OpenGL and tessellator state while leaving inventory rendering unchanged.
+
 # Reduce custom-door render allocations
 
 ## Changed
