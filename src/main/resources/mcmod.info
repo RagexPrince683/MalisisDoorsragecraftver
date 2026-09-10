@@ -1,14 +1,14 @@
 [
 {
   "modid": "malisisdoors",
-  "name": "Malisis' Doors",
-  "description": "Better doors!",
+  "name": "DeadHour Custom Malisis' Doors",
+  "description": "Better doors! NO shit code edition!",
   "version": "${version}",
   "logoFile": "malisisdoors.png",
   "mcversion": "${mcversion}",
-  "url": "http://github.com/ordinastie",
+  "url": "https://github.com/RagexPrince683",
   "updateUrl": "",
-  "authors": [ "Ordinastie" ],
+  "authors": [ "RagexPrince683" ],
   "parent":"",
   "screenshots": []
 		
