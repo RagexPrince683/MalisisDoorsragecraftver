@@ -134,6 +134,7 @@ public class FenceGate extends BlockFenceGate implements ITileEntityProvider
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemStack)
 	{
 		super.onBlockPlacedBy(world, x, y, z, player, itemStack);
+		invalidateRenderPairs(world, x, y, z);
 		if (world.isRemote)
 			return;
 
@@ -174,6 +175,7 @@ public class FenceGate extends BlockFenceGate implements ITileEntityProvider
 				world.setBlockMetadataWithNotify(te.xCoord, te.yCoord, te.zCoord, dir, 2);
 		}
 
+		invalidateRenderPairs(world, x, y, z);
 		return true;
 	}
 
@@ -184,6 +186,7 @@ public class FenceGate extends BlockFenceGate implements ITileEntityProvider
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block)
 	{
+		invalidateRenderPairs(world, x, y, z);
 		FenceGateTileEntity te = TileEntityUtils.getTileEntity(FenceGateTileEntity.class, world, x, y, z);
 		if (te == null)
 			return;
@@ -192,6 +195,26 @@ public class FenceGate extends BlockFenceGate implements ITileEntityProvider
 
 		if (world.isBlockIndirectlyGettingPowered(x, y, z) || block.canProvidePower())
 			te.setPowered(te.isPowered());
+	}
+
+	private void invalidateRenderPairs(World world, int x, int y, int z)
+	{
+		if (!world.isRemote)
+			return;
+		invalidateRenderPair(world, x, y, z);
+		invalidateRenderPair(world, x + 1, y, z);
+		invalidateRenderPair(world, x - 1, y, z);
+		invalidateRenderPair(world, x, y, z + 1);
+		invalidateRenderPair(world, x, y, z - 1);
+	}
+
+	private void invalidateRenderPair(World world, int x, int y, int z)
+	{
+		if (!world.blockExists(x, y, z))
+			return;
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity instanceof FenceGateTileEntity)
+			((FenceGateTileEntity) tileEntity).invalidateRenderPair();
 	}
 
 	@Override

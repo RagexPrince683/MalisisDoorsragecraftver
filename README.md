@@ -149,3 +149,11 @@ runtime. The Door Factory's vanilla `ItemBlock` uses the existing
 icons and render type `0`. Minecraft therefore draws it through the normal
 three-dimensional `RenderBlocks` inventory and held-item path, without a
 duplicate item texture or a custom item renderer.
+
+## Opportunity #7 rendering optimization
+
+Fence gates, hinged trapdoors, and sliding trapdoors use renderer-owned models that are reset to their stored base vertices before each tile render. Their built-in movements apply a direct CPU pose: rotations share a single sine/cosine calculation for each distinct angle and sliding uses direct vertex displacement. Custom or otherwise unsupported movement implementations retain the legacy `Animation` path.
+
+Fence gate pairing used only for rendering is cached by each gate as a partner coordinate and hinge side; it never stores a neighboring tile entity reference and does not replace the existing server/gameplay pairing lookup. Placement and neighbor callbacks, observed metadata/direction and state changes, synchronization, tile validation/invalidation, and chunk unload dirty the bounded cache. Rebuilding checks only loaded positions and therefore does not force chunk loads.
+
+This optimization does not add GL state changes or GPU caches, and remains inside the shared renderer setup/cleanup path used for Angelica compatibility. Runtime performance and visual behavior still require end-user development feedback.

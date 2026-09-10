@@ -28,6 +28,7 @@ import net.malisis.doors.internal.util.BlockPos;
 import net.malisis.doors.internal.util.BlockState;
 import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.door.DoorDescriptor;
+import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.DoorRegistry;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.movement.FenceGateMovement;
@@ -49,6 +50,12 @@ public class FenceGateTileEntity extends DoorTileEntity
 	private BlockState camoState;
 	private int camoColor;
 	private boolean isWall;
+	private boolean renderPairDirty = true;
+	private boolean renderPairPresent;
+	private int renderPairX;
+	private int renderPairZ;
+	private int renderPairMetadata = Integer.MIN_VALUE;
+	private DoorState renderPairState;
 
 	public FenceGateTileEntity()
 	{
@@ -72,8 +79,90 @@ public class FenceGateTileEntity extends DoorTileEntity
 		return isWall;
 	}
 
+	/**
+	 * Returns -1 for the model's left hinge, 1 for its right hinge, or 0 for two independent leaves.
+	 * Only coordinates and the selected side are cached; neighboring tile entities are never retained.
+	 */
+	public int getRenderPairSide()
+	{
+		int metadata = getBlockMetadata();
+		if (renderPairMetadata != metadata || renderPairState != getState())
+			renderPairDirty = true;
+		if (renderPairDirty)
+			rebuildRenderPair();
+		if (!renderPairPresent)
+			return 0;
+
+		if (getDirection() == Door.DIR_NORTH || getDirection() == Door.DIR_SOUTH)
+			return zCoord < renderPairZ ? -1 : 1;
+		return xCoord > renderPairX ? -1 : 1;
+	}
+
+	public void invalidateRenderPair()
+	{
+		renderPairDirty = true;
+	}
+
+	private void clearRenderPair()
+	{
+		renderPairDirty = true;
+		renderPairPresent = false;
+		renderPairMetadata = Integer.MIN_VALUE;
+		renderPairState = null;
+	}
+
+	private void rebuildRenderPair()
+	{
+		renderPairDirty = false;
+		renderPairPresent = false;
+		renderPairMetadata = getBlockMetadata();
+		renderPairState = getState();
+		if (worldObj == null || descriptor == null || !descriptor.isDoubleDoor())
+			return;
+
+		int offsetX = getDirection() == Door.DIR_NORTH || getDirection() == Door.DIR_SOUTH ? 0 : 1;
+		int offsetZ = offsetX == 0 ? 1 : 0;
+		if (cacheMatchingRenderPair(xCoord + offsetX, zCoord + offsetZ))
+			return;
+		cacheMatchingRenderPair(xCoord - offsetX, zCoord - offsetZ);
+	}
+
+	private boolean cacheMatchingRenderPair(int x, int z)
+	{
+		if (!worldObj.blockExists(x, yCoord, z))
+			return false;
+		TileEntity neighbor = worldObj.getTileEntity(x, yCoord, z);
+		if (!(neighbor instanceof FenceGateTileEntity) || !isMatchingDoubleDoor((FenceGateTileEntity) neighbor))
+			return false;
+		renderPairX = x;
+		renderPairZ = z;
+		renderPairPresent = true;
+		return true;
+	}
+
+	private void invalidateLoadedRenderNeighbors()
+	{
+		if (worldObj == null || !worldObj.isRemote)
+			return;
+		invalidateLoadedRenderNeighbor(xCoord + 1, zCoord);
+		invalidateLoadedRenderNeighbor(xCoord - 1, zCoord);
+		invalidateLoadedRenderNeighbor(xCoord, zCoord + 1);
+		invalidateLoadedRenderNeighbor(xCoord, zCoord - 1);
+	}
+
+	private void invalidateLoadedRenderNeighbor(int x, int z)
+	{
+		if (!worldObj.blockExists(x, yCoord, z))
+			return;
+		TileEntity neighbor = worldObj.getTileEntity(x, yCoord, z);
+		if (neighbor instanceof FenceGateTileEntity)
+			((FenceGateTileEntity) neighbor).invalidateRenderPair();
+	}
+
 	public void updateAll()
 	{
+		invalidateRenderPair();
+		invalidateLoadedRenderNeighbors();
 		if (!worldObj.isRemote)
 			return;
 
@@ -200,6 +289,41 @@ public class FenceGateTileEntity extends DoorTileEntity
 	}
 
 	@Override
+	public void setDoorState(DoorState state)
+	{
+		if (getState() != state)
+		{
+			invalidateRenderPair();
+			invalidateLoadedRenderNeighbors();
+		}
+		super.setDoorState(state);
+	}
+
+	@Override
+	public void validate()
+	{
+		super.validate();
+		clearRenderPair();
+		invalidateLoadedRenderNeighbors();
+	}
+
+	@Override
+	public void invalidate()
+	{
+		clearRenderPair();
+		invalidateLoadedRenderNeighbors();
+		super.invalidate();
+	}
+
+	@Override
+	public void onChunkUnload()
+	{
+		clearRenderPair();
+		invalidateLoadedRenderNeighbors();
+		super.onChunkUnload();
+	}
+
+	@Override
 	public AxisAlignedBB getRenderBoundingBox()
 	{
 		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
@@ -208,6 +332,7 @@ public class FenceGateTileEntity extends DoorTileEntity
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
 	{
+		clearRenderPair();
 		super.onDataPacket(net, packet);
 		updateAll();
 	}

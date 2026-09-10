@@ -27,6 +27,7 @@ package net.malisis.doors.trapdoor.renderer;
 import net.malisis.doors.internal.renderer.RenderParameters;
 import net.malisis.doors.internal.renderer.RenderType;
 import net.malisis.doors.internal.renderer.animation.Animation;
+import net.malisis.doors.door.movement.IOptimizedDoorMovement;
 import net.malisis.doors.internal.renderer.element.Face;
 import net.malisis.doors.internal.renderer.element.Shape;
 import net.malisis.doors.internal.renderer.element.shape.Cube;
@@ -118,7 +119,12 @@ public class TrapDoorRenderer extends DoorRenderer
 
 		setup();
 
-		if (tileEntity.getMovement() != null)
+		if (tileEntity.getMovement() instanceof IOptimizedDoorMovement)
+		{
+			IOptimizedDoorMovement movement = (IOptimizedDoorMovement) tileEntity.getMovement();
+			movement.applyPose(tileEntity, model, getMovementProgress());
+		}
+		else if (tileEntity.getMovement() != null)
 		{
 			Animation[] anims = tileEntity.getMovement().getAnimations(tileEntity, model, rp);
 			ar.animate(anims);

@@ -626,6 +626,56 @@ public class Shape implements ITransformable.Translate, ITransformable.Rotate, I
 	}
 
 	/**
+	 * Rotates current vertices around the X axis without allocating a transformation matrix.
+	 * The caller supplies one sine/cosine pair so every vertex uses the same calculation.
+	 */
+	public void rotateVerticesAroundX(double sine, double cosine, double centerY, double centerZ)
+	{
+		for (Face face : faces)
+		{
+			for (Vertex vertex : face.getVertexes())
+			{
+				if (vertex == null)
+					continue;
+				double y = vertex.getY() - centerY;
+				double z = vertex.getZ() - centerZ;
+				vertex.setY(y * cosine - z * sine + centerY);
+				vertex.setZ(y * sine + z * cosine + centerZ);
+			}
+		}
+	}
+
+	/** Rotates current vertices around the Y axis using caller-owned trigonometric values. */
+	public void rotateVerticesAroundY(double sine, double cosine, double centerX, double centerZ)
+	{
+		for (Face face : faces)
+		{
+			for (Vertex vertex : face.getVertexes())
+			{
+				if (vertex == null)
+					continue;
+				double x = vertex.getX() - centerX;
+				double z = vertex.getZ() - centerZ;
+				vertex.setX(x * cosine + z * sine + centerX);
+				vertex.setZ(-x * sine + z * cosine + centerZ);
+			}
+		}
+	}
+
+	/** Translates current vertices directly, without creating vectors or matrices. */
+	public void translateVertices(double x, double y, double z)
+	{
+		for (Face face : faces)
+		{
+			for (Vertex vertex : face.getVertexes())
+			{
+				if (vertex != null)
+					vertex.add(x, y, z);
+			}
+		}
+	}
+
+	/**
 	 * Stores the current state of each {@link Vertex} making up this {@link Shape}.
 	 *
 	 * @return this {@link Shape}

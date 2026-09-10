@@ -32,7 +32,7 @@ import net.malisis.doors.internal.renderer.animation.transformation.Transformati
 import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;
-import net.malisis.doors.door.movement.IDoorMovement;
+import net.malisis.doors.door.movement.IOptimizedDoorMovement;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
 import net.malisis.doors.trapdoor.block.TrapDoor;
 import net.minecraft.util.AxisAlignedBB;
@@ -41,7 +41,7 @@ import net.minecraft.util.AxisAlignedBB;
  * @author Ordinastie
  *
  */
-public class TrapDoorMovement implements IDoorMovement
+public class TrapDoorMovement implements IOptimizedDoorMovement
 {
 	@Override
 	public AxisAlignedBB getBoundingBox(DoorTileEntity tileEntity, boolean topBlock, BoundingBoxType type)
@@ -92,6 +92,18 @@ public class TrapDoorMovement implements IDoorMovement
 		}
 
 		return new Rotation(fromAngle, toAngle).aroundAxis(1, 0, 0).offset(0, -f, f).forTicks(tileEntity.getDescriptor().getOpeningTime());
+	}
+
+	@Override
+	public void applyPose(DoorTileEntity tileEntity, MalisisModel model, float progress)
+	{
+		float poseProgress = tileEntity.getState() == DoorState.CLOSING || tileEntity.getState() == DoorState.CLOSED ? 1 - progress : progress;
+		float angle = tileEntity.isTopBlock(0, 0, 0) ? -90 * poseProgress : 90 * poseProgress;
+		double radians = Math.toRadians(angle);
+		double sine = Math.sin(radians);
+		double cosine = Math.cos(radians);
+		double offset = Door.DOOR_WIDTH / 2.0D;
+		model.getShape("shape").rotateVerticesAroundX(sine, cosine, offset, 1 - offset);
 	}
 
 	@Override

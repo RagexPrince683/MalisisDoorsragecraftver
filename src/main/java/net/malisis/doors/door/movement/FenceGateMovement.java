@@ -33,13 +33,15 @@ import net.malisis.doors.internal.renderer.model.MalisisModel;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
+import net.malisis.doors.door.tileentity.FenceGateTileEntity;
+import net.malisis.doors.internal.renderer.element.Shape;
 import net.minecraft.util.AxisAlignedBB;
 
 /**
  * @author Ordinastie
  *
  */
-public class FenceGateMovement implements IDoorMovement
+public class FenceGateMovement implements IOptimizedDoorMovement
 {
 
 	@Override
@@ -71,6 +73,40 @@ public class FenceGateMovement implements IDoorMovement
 		rotation.forTicks(tileEntity.getDescriptor().getOpeningTime());
 
 		return rotation;
+	}
+
+	@Override
+	public void applyPose(DoorTileEntity tileEntity, MalisisModel model, float progress)
+	{
+		float poseProgress = tileEntity.getState() == DoorState.CLOSING || tileEntity.getState() == DoorState.CLOSED ? 1 - progress : progress;
+		boolean reversedOpen = ((tileEntity.getBlockMetadata() >> 1) & 1) == 1;
+		float rightAngle = tileEntity.getDirection() == Door.DIR_NORTH || tileEntity.getDirection() == Door.DIR_SOUTH ? -90 : 90;
+		if (!reversedOpen)
+			rightAngle = -rightAngle;
+		rightAngle *= poseProgress;
+
+		if (tileEntity instanceof FenceGateTileEntity)
+		{
+			FenceGateTileEntity gate = (FenceGateTileEntity) tileEntity;
+			int pairSide = gate.getRenderPairSide();
+			if (pairSide != 0)
+			{
+				float angle = pairSide < 0 ? -rightAngle : rightAngle;
+				double radians = Math.toRadians(angle);
+				double sine = Math.sin(radians);
+				double cosine = Math.cos(radians);
+				double hinge = pairSide < 0 ? 0.9375D : 0.0625D;
+				for (Shape shape : model)
+					shape.rotateVerticesAroundY(sine, cosine, hinge, 0.5D);
+				return;
+			}
+		}
+
+		double radians = Math.toRadians(rightAngle);
+		double sine = Math.sin(radians);
+		double cosine = Math.cos(radians);
+		model.getShape("right").rotateVerticesAroundY(sine, cosine, 0.0625D, 0.5D);
+		model.getShape("left").rotateVerticesAroundY(-sine, cosine, 0.9375D, 0.5D);
 	}
 
 	@Override
