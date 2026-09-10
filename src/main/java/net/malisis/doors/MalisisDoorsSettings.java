@@ -37,6 +37,7 @@ public class MalisisDoorsSettings
 	public static boolean enableMixedBlocks = true;
 	public static boolean enhancedMixedBlockPlacement = true;
 	public static boolean simpleMixedBlockRendering = false;
+	public static boolean hybridDoorRendering = false;
 	public static boolean enableVanishingBlocks = true;
 	public static boolean enableVanishingGlitch = true;
 	public static double vanishingGlitchChance = 0.0005D;
@@ -58,6 +59,8 @@ public class MalisisDoorsSettings
 				"Use the enhanced mixed-block placement behavior.");
 		simpleMixedBlockRendering = configuration.getBoolean("simpleMixedBlockRendering", CATEGORY, false,
 				"Use the simpler mixed-block renderer.");
+		hybridDoorRendering = configuration.getBoolean("hybridDoorRendering", CATEGORY, false,
+				"Experimentally render supported stationary opaque doors in chunk geometry. Unsupported renderers stay on TESR.");
 		enableVanishingBlocks = configuration.getBoolean("enableVanishingBlocks", CATEGORY, true, "Enable vanishing blocks.");
 		enableVanishingGlitch = configuration.getBoolean("enableVanishingGlitch", CATEGORY, true,
 				"Allow the occasional vanishing-block visual glitch.");
@@ -70,6 +73,7 @@ public class MalisisDoorsSettings
 	public void save()
 	{
 		configuration.get(CATEGORY, "simpleMixedBlockRendering", false).set(simpleMixedBlockRendering);
+		configuration.get(CATEGORY, "hybridDoorRendering", false).set(hybridDoorRendering);
 		if (configuration.hasChanged())
 			configuration.save();
 	}

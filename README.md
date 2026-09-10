@@ -63,6 +63,40 @@ and NBT persistence.
 The internal Syncer source remains for source compatibility, but no current
 MalisisDoors gameplay class is annotated with `@Syncable`; active doors use their
 existing tile-entity description packets and explicit gameplay messages.
+
+## Experimental hybrid door rendering
+
+The client configuration contains `hybridDoorRendering`, which defaults to
+`false`. Its first planned batch is deliberately restricted to ordinary
+`Door`/`DoorTileEntity` instances created by the built-in `WoodDoor` and
+`VanillaDoor` descriptors, using exactly `RotatingDoorMovement` in opaque render
+pass 0. Custom-material doors, glass or otherwise transparent doors, subclasses
+with special renderers, nonstandard descriptors or tile entities, missing or
+uncertain resources, and every non-rotating movement fall back to TESR. Garage
+doors, custom doors, curtains, forcefields, trapdoors, and other special door
+families are deferred.
+
+The chunk path has isolated shape and parameter data for each lower or upper
+block callback. Each half is emitted at its owning block position and applies
+the same closed/open rotation, hinge, centering, icons, UV handling, brightness,
+and damage override machinery as the existing renderer. It performs no direct
+OpenGL calls. A complete transition would request rebuilds for both affected
+chunk sections only when movement starts or ends, keep TESR visible while old
+chunk geometry remains live, and switch visibility only after the replacement
+geometry has actually been uploaded. This also covers a door whose halves cross
+a chunk-section boundary, rapid reversal, resource reload, world unload, and
+tile invalidation without frame-delay guesses or per-animation-frame rebuilds.
+
+Forge 1.7.10 does not expose a chunk rebuild/upload completion event, and no
+such public contract is present in the repository's existing Angelica-compatible
+integration surface. An ISBRH callback only proves that compilation visited a
+block; it does not prove that the resulting buffers are visible. Consequently,
+the safety gate currently keeps every door on the established TESR path even
+when the option is enabled. This is the only renderer configuration supported
+by current code evidence; the isolated chunk emitter is staged but cannot be
+activated until a verified renderer-specific completion adapter exists. The
+option remains experimental pending end-user development feedback. Performance
+gains and visual behavior remain unmeasured.
 # Standalone large doors
 
 Carriage and Medieval Doors use ordinary Forge multiblocks. The visible origin
