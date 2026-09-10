@@ -24,6 +24,8 @@
 
 package net.malisis.doors.trapdoor.renderer;
 
+import java.util.ArrayList;
+
 import net.malisis.doors.internal.renderer.RenderParameters;
 import net.malisis.doors.internal.renderer.RenderType;
 import net.malisis.doors.internal.renderer.animation.Animation;
@@ -36,6 +38,8 @@ import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.renderer.DoorRenderer;
 import net.malisis.doors.trapdoor.block.TrapDoor;
+import net.malisis.doors.trapdoor.movement.SlidingTrapDoorMovement;
+import net.malisis.doors.trapdoor.movement.TrapDoorMovement;
 import net.minecraft.client.renderer.DestroyBlockProgress;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -48,10 +52,30 @@ public class TrapDoorRenderer extends DoorRenderer
 	RenderParameters rpTop;
 	MalisisModel trapDoorModel;
 	MalisisModel slidingTrapDoorModel;
+	private final StationaryAoEntry[] stationaryAoCache = new StationaryAoEntry[32];
+	private final ArrayList<int[][][]> movingAoStorage = new ArrayList<int[][][]>();
+	private int activeAoStorageDepth;
+
+	private static class StationaryAoEntry
+	{
+		private final long geometrySignature;
+		private final int[][][] sampleOffsets;
+
+		private StationaryAoEntry(long geometrySignature, int[][][] sampleOffsets)
+		{
+			this.geometrySignature = geometrySignature;
+			this.sampleOffsets = sampleOffsets;
+		}
+	}
 
 	@Override
 	protected void initialize()
 	{
+		for (int i = 0; i < stationaryAoCache.length; i++)
+			stationaryAoCache[i] = null;
+		movingAoStorage.clear();
+		activeAoStorageDepth = 0;
+
 		Shape s = new Cube();
 		s.setSize(1, Door.DOOR_WIDTH, 1);
 		s.interpolateUV();
@@ -133,9 +157,84 @@ public class TrapDoorRenderer extends DoorRenderer
 		Shape s = model.getShape("shape");
 		Face f = s.getFace(Face.nameFromDirection(ForgeDirection.UP));
 		s.applyMatrix();
-		f.getParameters().aoMatrix.set(f.calculateAoMatrix(ForgeDirection.UP));
 
-		model.render(this, rp);
+		int[][][] sampleOffsets = getStationarySampleOffsets(f);
+		boolean usesMovingStorage = sampleOffsets == null;
+		if (usesMovingStorage)
+			sampleOffsets = acquireMovingSampleOffsets(f.getVertexes().length);
+
+		int[][][] previousSampleOffsets = f.getParameters().aoMatrix.getValue();
+		try
+		{
+			if (usesMovingStorage)
+				f.calculateAoMatrix(ForgeDirection.UP, sampleOffsets);
+
+			f.getParameters().aoMatrix.set(sampleOffsets);
+			model.render(this, rp);
+		}
+		finally
+		{
+			f.getParameters().aoMatrix.set(previousSampleOffsets);
+			if (usesMovingStorage)
+				activeAoStorageDepth--;
+		}
+	}
+
+	private int[][][] getStationarySampleOffsets(Face face)
+	{
+		if (tileEntity.isMoving())
+			return null;
+
+		int movementIndex;
+		if (tileEntity.getMovement() != null && tileEntity.getMovement().getClass() == TrapDoorMovement.class)
+			movementIndex = 0;
+		else if (tileEntity.getMovement() != null && tileEntity.getMovement().getClass() == SlidingTrapDoorMovement.class)
+			movementIndex = 1;
+		else
+			return null;
+
+		int directionIndex = direction;
+		if (directionIndex < 0 || directionIndex > 3)
+			return null;
+
+		int cacheIndex = movementIndex * 16 + directionIndex * 4 + (topBlock ? 2 : 0) + (opened ? 1 : 0);
+		long geometrySignature = calculateGeometrySignature(face);
+		StationaryAoEntry entry = stationaryAoCache[cacheIndex];
+		if (entry == null || entry.geometrySignature != geometrySignature)
+		{
+			int[][][] sampleOffsets = new int[face.getVertexes().length][3][3];
+			face.calculateAoMatrix(ForgeDirection.UP, sampleOffsets);
+			entry = new StationaryAoEntry(geometrySignature, sampleOffsets);
+			stationaryAoCache[cacheIndex] = entry;
+		}
+
+		return entry.sampleOffsets;
+	}
+
+	private int[][][] acquireMovingSampleOffsets(int vertexCount)
+	{
+		if (activeAoStorageDepth == movingAoStorage.size())
+			movingAoStorage.add(new int[vertexCount][3][3]);
+
+		int[][][] sampleOffsets = movingAoStorage.get(activeAoStorageDepth++);
+		if (sampleOffsets.length != vertexCount)
+		{
+			sampleOffsets = new int[vertexCount][3][3];
+			movingAoStorage.set(activeAoStorageDepth - 1, sampleOffsets);
+		}
+		return sampleOffsets;
+	}
+
+	private long calculateGeometrySignature(Face face)
+	{
+		long signature = 1125899906842597L;
+		for (net.malisis.doors.internal.renderer.element.Vertex vertex : face.getVertexes())
+		{
+			signature = 31 * signature + Double.doubleToLongBits(vertex.getX());
+			signature = 31 * signature + Double.doubleToLongBits(vertex.getY());
+			signature = 31 * signature + Double.doubleToLongBits(vertex.getZ());
+		}
+		return signature;
 	}
 
 	@Override
