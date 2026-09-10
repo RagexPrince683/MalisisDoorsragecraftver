@@ -1,3 +1,21 @@
+# Remove redundant door and fence gate updates (Opportunity #9)
+
+## Changed
+
+- Door centering now requests synchronization or rendering only when its effective value changes, while retaining the first placement update.
+- Door NBT decoding restores persisted fields without invoking gameplay setters, and client packet application separately preserves animation starts, reversals, completion, and first-packet rendering without sounds or server synchronization side effects.
+- Fence gates now compare camouflage block identity, metadata, color, and wall offset before requesting an appearance render update, while pairing-cache invalidation remains independent.
+- Packet-driven fence gate appearance and serialized visual changes are combined into one client render request.
+
+## Retained updates
+
+- Gameplay state transitions still send tile description updates, completion metadata notifications, sounds, and paired-door updates because those operations serve separate synchronization, metadata, and gameplay responsibilities.
+- Door neighbor callbacks still notify both halves as required for centering, redstone, and connected structures; gate neighbor callbacks still invalidate pairing even when appearance is unchanged.
+
+## Verification required
+
+- Runtime behavior and performance require end-user development feedback. Initial placement and synchronization, existing-world loading, repeated packets, animation reversal and completion, double doors, paired gates, camouflage, wall offsets, custom materials, hybrid rendering, and Angelica invalidation were source-reviewed but not game-launched under this change.
+
 # Reduce trapdoor ambient occlusion allocation (Opportunity #8)
 
 ## Changed
