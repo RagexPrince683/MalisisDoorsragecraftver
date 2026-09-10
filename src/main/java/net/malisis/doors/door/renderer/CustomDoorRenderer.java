@@ -25,6 +25,7 @@
 package net.malisis.doors.door.renderer;
 
 import net.malisis.doors.internal.renderer.RenderType;
+import net.malisis.doors.internal.renderer.element.Face;
 import net.malisis.doors.internal.renderer.element.Shape;
 import net.malisis.doors.internal.renderer.element.face.BottomFace;
 import net.malisis.doors.internal.renderer.element.face.NorthFace;
@@ -128,7 +129,6 @@ public class CustomDoorRenderer extends DoorRenderer
 	@Override
 	public void render()
 	{
-		initialize();
 		if (renderType == RenderType.ITEM_INVENTORY)
 		{
 			if (itemStack.stackTagCompound == null)
@@ -173,6 +173,10 @@ public class CustomDoorRenderer extends DoorRenderer
 	protected void setup()
 	{
 		model.resetState();
+		rp.reset();
+		configureParams(rp);
+		resetMaterialParams(model.getShape("top"));
+		resetMaterialParams(model.getShape("bottom"));
 
 		if (renderType == RenderType.TESR_WORLD)
 			setInfos(tileEntity);
@@ -204,6 +208,21 @@ public class CustomDoorRenderer extends DoorRenderer
 			}
 			else if (itemRenderType == ItemRenderType.EQUIPPED)
 				model.rotate(180, 0, 1, 0, 0, 0, 0);
+		}
+	}
+
+	private void resetMaterialParams(Shape shape)
+	{
+		for (Face face : shape.getFaces("frame"))
+		{
+			face.getParameters().icon.reset();
+			face.getParameters().colorMultiplier.reset();
+		}
+
+		for (Face face : shape.getFaces("material"))
+		{
+			face.getParameters().icon.reset();
+			face.getParameters().colorMultiplier.reset();
 		}
 	}
 

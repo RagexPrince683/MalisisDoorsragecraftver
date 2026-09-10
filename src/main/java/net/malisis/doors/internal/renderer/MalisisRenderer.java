@@ -26,6 +26,7 @@ package net.malisis.doors.internal.renderer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -126,6 +127,12 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	protected RenderParameters rp = new RenderParameters();
 	/** Current parameters for the face being rendered. */
 	protected RenderParameters params;
+	/** Reusable parameters used while applying textures, separated by active render depth. */
+	private final ArrayList<RenderParameters> textureParameters = new ArrayList<>();
+	/** Reusable parameters used while drawing faces, separated by active render depth. */
+	private final ArrayList<RenderParameters> faceParameters = new ArrayList<>();
+	private int textureParameterDepth;
+	private int faceParameterDepth;
 	/** Base brightness of the block. */
 	protected int baseBrightness;
 	/** An override texture set by the renderer. */
@@ -819,25 +826,36 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		}
 
 		face = f;
-		params = new RenderParameters();
+		RenderParameters previousParams = params;
+		boolean nested = faceParameterDepth > 0;
+		params = acquireParameters(faceParameters, faceParameterDepth++);
 		params.merge(rp);
 		params.merge(faceParams);
 
-		if (!shouldRenderFace(face))
-			return;
+		try
+		{
+			if (!shouldRenderFace(face))
+				return;
 
-		//use normals if available
-		if ((renderType == RenderType.ITEM_INVENTORY || renderType == RenderType.ISBRH_INVENTORY || params.useNormals.get())
-				&& params.direction.get() != null)
-			t.setNormal(params.direction.get().offsetX, params.direction.get().offsetY, params.direction.get().offsetZ);
+			//use normals if available
+			if ((renderType == RenderType.ITEM_INVENTORY || renderType == RenderType.ISBRH_INVENTORY || params.useNormals.get())
+					&& params.direction.get() != null)
+				t.setNormal(params.direction.get().offsetX, params.direction.get().offsetY, params.direction.get().offsetZ);
 
-		baseBrightness = getBaseBrightness();
+			baseBrightness = getBaseBrightness();
 
-		drawVertexes(face.getVertexes());
+			drawVertexes(face.getVertexes());
 
-		//we need to separate each face
-		if (drawMode == GL11.GL_POLYGON || drawMode == GL11.GL_LINE || drawMode == GL11.GL_LINE_STRIP || drawMode == GL11.GL_LINE_LOOP)
-			next();
+			//we need to separate each face
+			if (drawMode == GL11.GL_POLYGON || drawMode == GL11.GL_LINE || drawMode == GL11.GL_LINE_STRIP || drawMode == GL11.GL_LINE_LOOP)
+				next();
+		}
+		finally
+		{
+			faceParameterDepth--;
+			if (nested)
+				params = previousParams;
+		}
 	}
 
 	/**
@@ -978,22 +996,40 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 	public void applyTexture(Shape shape, RenderParameters parameters)
 	{
 		//shape.applyMatrix();
-		for (Face f : shape.getFaces())
+		RenderParameters params = acquireParameters(textureParameters, textureParameterDepth++);
+		try
 		{
-			face = f;
-			RenderParameters params = new RenderParameters();
-			params.merge(f.getParameters());
-			params.merge(parameters);
-
-			IIcon icon = getIcon(params);
-			if (icon != null)
+			for (Face f : shape.getFaces())
 			{
-				boolean flipU = params.flipU.get();
-				if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST)
-					flipU = !flipU;
-				f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
+				face = f;
+				params.reset();
+				params.merge(f.getParameters());
+				params.merge(parameters);
+
+				IIcon icon = getIcon(params);
+				if (icon != null)
+				{
+					boolean flipU = params.flipU.get();
+					if (params.direction.get() == ForgeDirection.NORTH || params.direction.get() == ForgeDirection.EAST)
+						flipU = !flipU;
+					f.setTexture(icon, flipU, params.flipV.get(), params.interpolateUV.get());
+				}
 			}
 		}
+		finally
+		{
+			textureParameterDepth--;
+		}
+	}
+
+	private RenderParameters acquireParameters(ArrayList<RenderParameters> parameterStack, int depth)
+	{
+		if (depth == parameterStack.size())
+			parameterStack.add(new RenderParameters());
+
+		RenderParameters parameters = parameterStack.get(depth);
+		parameters.reset();
+		return parameters;
 	}
 
 	/**

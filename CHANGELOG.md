@@ -1,3 +1,10 @@
+# Reduce custom-door render allocations
+
+## Changed
+
+- Reused the custom door model after the renderer's guarded initialization and reset its mutable geometry and render parameters for each world or item render.
+- Reused renderer-owned, depth-isolated temporary parameter sets for texture application and face drawing while retaining the existing merge precedence.
+
 # Restore Door Factory block-item rendering
 
 ## Fixed

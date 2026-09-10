@@ -76,12 +76,17 @@ public class DoorRenderer extends MalisisRenderer
 	protected void initParams()
 	{
 		rp = new RenderParameters();
-		rp.renderAllFaces.set(true);
-		rp.calculateAOColor.set(false);
-		rp.useBlockBounds.set(false);
-		rp.useEnvironmentBrightness.set(false);
-		rp.calculateBrightness.set(false);
-		rp.interpolateUV.set(false);
+		configureParams(rp);
+	}
+
+	protected void configureParams(RenderParameters parameters)
+	{
+		parameters.renderAllFaces.set(true);
+		parameters.calculateAOColor.set(false);
+		parameters.useBlockBounds.set(false);
+		parameters.useEnvironmentBrightness.set(false);
+		parameters.calculateBrightness.set(false);
+		parameters.interpolateUV.set(false);
 	}
 
 	@Override
