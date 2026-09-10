@@ -105,7 +105,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		private int depth;
 	}
 
-	private static class RenderScope
+	protected static class RenderScope
 	{
 		private boolean attributesPushed;
 		private boolean matrixPushed;
@@ -616,8 +616,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		_initialize();
 		vertexDrawn = false;
 		this.renderType = renderType;
-		RenderScope scope = new RenderScope();
-		this.renderScope = scope;
+		RenderScope scope = beginRenderScope();
 		if (renderType == RenderType.ISBRH_WORLD)
 		{
 			tessellatorShift();
@@ -664,7 +663,34 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		}
 	}
 
-	private void pushRenderState(RenderScope scope)
+	/**
+	 * Opens an ownership scope for a renderer which supplies its own setup.
+	 * Subclasses must open the scope before starting a Tessellator batch.
+	 */
+	protected RenderScope beginRenderScope()
+	{
+		RenderScope scope = new RenderScope();
+		this.renderScope = scope;
+		return scope;
+	}
+
+	protected void markRenderScopeFailed()
+	{
+		if (renderScope != null)
+			renderScope.failed = true;
+	}
+
+	protected boolean hasRenderScope()
+	{
+		return renderScope != null;
+	}
+
+	protected boolean ownsTessellatorBatch()
+	{
+		return renderScope != null && renderScope.ownsBatch;
+	}
+
+	protected void pushRenderState(RenderScope scope)
 	{
 		int mask = GL11.GL_COLOR_BUFFER_BIT | GL11.GL_CURRENT_BIT | GL11.GL_ENABLE_BIT | GL11.GL_LIGHTING_BIT
 				| GL11.GL_TEXTURE_BIT | GL11.GL_TRANSFORM_BIT;
@@ -672,7 +698,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		scope.attributesPushed = true;
 	}
 
-	private void pushModelView(RenderScope scope)
+	protected void pushModelView(RenderScope scope)
 	{
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
@@ -835,7 +861,7 @@ public class MalisisRenderer extends TileEntitySpecialRenderer implements ISimpl
 		return previous;
 	}
 
-	private static void throwUnchecked(Throwable throwable)
+	protected static void throwUnchecked(Throwable throwable)
 	{
 		MalisisRenderer.<RuntimeException>throwAny(throwable);
 	}

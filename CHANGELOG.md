@@ -1,3 +1,21 @@
+# Fix Block Mixer render ownership and garage door placement recursion
+
+## Fixed
+
+- Gave shared GUI rendering an explicit renderer scope before it starts tessellating. GUI batches are now tracked as renderer-owned, texture switches submit geometry against its intended texture, and item, text, tooltip, and picked-item interruptions resume an owned GUI batch without weakening the caller-owned batch guard.
+- Made GUI setup and cleanup exception-safe through the shared renderer state scope. Incoming GL attributes and successful matrix pushes are restored, temporary component, texture, and tessellator context is released, and cleanup failures are suppressed behind the original rendering failure.
+- Replaced garage door column invalidation's full-height `World.getTileEntity()` scan with a pass over already registered, loaded garage door tile entities. Lifecycle callbacks now dirty only existing column caches and cannot ask Forge's chunk lookup to create and validate another tile entity while the current segment is still being registered.
+- Preserved lazy refresh for mixed load order: each segment clears its own cache during validation, later-registering segments dirty earlier registered column members, and structure discovery remains deferred until a normal renderer or gameplay query needs it. Placement, removal, rotation, neighbor, invalidation, and unload callers retain immediate invalidation for registered segments without loading chunks.
+
+## History
+
+- Commit `75078cc935f94842c100b799b8453618adbf4238` introduced renderer-owned scopes and the caller-owned tessellator guard, while the GUI override continued to bypass scope creation.
+- Commit `bfd7ba12ac2b65c2b2f23dc8e8a1181f8725ed36` introduced garage door structure caching and lifecycle column invalidation through creating world lookups.
+
+## Verification required
+
+- Runtime crash resolution and visual behavior require end-user development feedback. Block Mixer controls, slots, previews, processing, texture transitions, clipping, scaling, nested item/text rendering, Angelica behavior, and garage door placement, discovery, animation, lighting, redstone, removal, split columns, mixed chunk-loading order, and existing saves were source-reviewed but were not game-launched.
+
 # Fix fence gate world-loading render-cache recursion
 
 ## Fixed
