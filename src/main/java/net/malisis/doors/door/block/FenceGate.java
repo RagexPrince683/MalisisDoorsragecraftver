@@ -210,9 +210,7 @@ public class FenceGate extends BlockFenceGate implements ITileEntityProvider
 
 	private void invalidateRenderPair(World world, int x, int y, int z)
 	{
-		if (!world.blockExists(x, y, z))
-			return;
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		TileEntity tileEntity = TileEntityUtils.getLoadedTileEntity(FenceGateTileEntity.class, world, x, y, z);
 		if (tileEntity instanceof FenceGateTileEntity)
 			((FenceGateTileEntity) tileEntity).invalidateRenderPair();
 	}

@@ -131,7 +131,7 @@ public class FenceGateTileEntity extends DoorTileEntity
 	{
 		if (!worldObj.blockExists(x, yCoord, z))
 			return false;
-		TileEntity neighbor = worldObj.getTileEntity(x, yCoord, z);
+		TileEntity neighbor = TileEntityUtils.getLoadedTileEntity(FenceGateTileEntity.class, worldObj, x, yCoord, z);
 		if (!(neighbor instanceof FenceGateTileEntity) || !isMatchingDoubleDoor((FenceGateTileEntity) neighbor))
 			return false;
 		renderPairX = x;
@@ -152,9 +152,7 @@ public class FenceGateTileEntity extends DoorTileEntity
 
 	private void invalidateLoadedRenderNeighbor(int x, int z)
 	{
-		if (!worldObj.blockExists(x, yCoord, z))
-			return;
-		TileEntity neighbor = worldObj.getTileEntity(x, yCoord, z);
+		TileEntity neighbor = TileEntityUtils.getLoadedTileEntity(FenceGateTileEntity.class, worldObj, x, yCoord, z);
 		if (neighbor instanceof FenceGateTileEntity)
 			((FenceGateTileEntity) neighbor).invalidateRenderPair();
 	}
