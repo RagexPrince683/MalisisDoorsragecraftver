@@ -1,3 +1,11 @@
+# Fix curtain, Door Factory, and standalone GUI textures
+
+## Fixed
+
+- Normalized Minecraft dye color tokens to the existing snake_case curtain texture convention without changing persisted registry names or dye metadata.
+- Verified the Door Factory's existing front, side, and Forge block-item icon paths against the packaged block textures.
+- Restored the MalisisCore GUI atlas required by the vendored standalone GUI renderer and documented its original MIT license.
+
 # Replace large-door coremod hooks with Forge multiblocks
 
 ## Fixed

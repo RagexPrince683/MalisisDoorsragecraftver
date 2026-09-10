@@ -24,6 +24,8 @@
 
 package net.malisis.doors.door.descriptor;
 
+import java.util.Locale;
+
 import net.malisis.doors.MalisisDoors;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.DoorRegistry;
@@ -42,12 +44,14 @@ public class Curtain extends DoorDescriptor
 {
 	public Curtain(String color, int meta)
 	{
+		String resourceColor = toResourceColor(color);
+
 		//Block
 		setMaterial(Material.cloth);
 		setHardness(2.0F);
 		setSoundType(Block.soundTypeCloth);
 		setName("curtain_" + color);
-		setTextureName(MalisisDoors.modid + ":curtains/curtain_" + color);
+		setTextureName(MalisisDoors.modid + ":curtains/curtain_" + resourceColor);
 
 		//TileEntity
 		setOpeningTime(6);
@@ -60,6 +64,15 @@ public class Curtain extends DoorDescriptor
 
 		//Recipe
 		setRecipe("AA", "AA", "AA", 'A', new ItemStack(Blocks.wool, 1, meta));
+	}
+
+	private static String toResourceColor(String color)
+	{
+		String resourceColor = color.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase(Locale.ROOT);
+		if (resourceColor.replace("_", "").equals("lightblue"))
+			return "light_blue";
+
+		return resourceColor;
 	}
 
 }
