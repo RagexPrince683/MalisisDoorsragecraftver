@@ -1,3 +1,12 @@
+# Add experimental hybrid rendering groundwork for opaque doors
+
+## Changed
+
+- Added the client `hybridDoorRendering` option, disabled by default, with explicit eligibility limited to built-in opaque `WoodDoor` and `VanillaDoor` descriptors using ordinary `Door`, `DoorTileEntity`, and exactly `RotatingDoorMovement`.
+- Added isolated per-callback stationary lower/upper chunk geometry generation that preserves the existing door poses and rendering parameters without sharing mutable TESR model state or issuing direct OpenGL calls.
+- Kept all doors on TESR after confirming that Forge 1.7.10 and the repository's Angelica integration surface provide no reliable chunk rebuild/upload completion hook; the incomplete handoff is safety-gated rather than enabled.
+- Documented supported renderer evidence, fallback cases, deferred door families, chunk-section ownership, transition requirements, and the experimental and unmeasured status of the option.
+
 # Cache garage door structures and animations
 
 ## Changed

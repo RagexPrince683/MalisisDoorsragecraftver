@@ -35,6 +35,7 @@ import net.malisis.doors.internal.util.AABBUtils;
 import net.malisis.doors.internal.util.RaytraceBlock;
 import net.malisis.doors.internal.util.TileEntityUtils;
 import net.malisis.doors.MalisisDoors;
+import net.malisis.doors.MalisisDoorsSettings;
 import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.DoorState;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
@@ -71,6 +72,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class Door extends BlockDoor implements ITileEntityProvider, IBoundingBox
 {
+	public static int renderId = -1;
 	public static Block[] centerBlocks = new Block[] { Blocks.iron_bars, Blocks.cobblestone_wall, Blocks.fence };
 
 	public static final int DIR_WEST = 0;
@@ -426,7 +428,7 @@ public class Door extends BlockDoor implements ITileEntityProvider, IBoundingBox
 	@Override
 	public int getRenderType()
 	{
-		return -1;
+		return MalisisDoorsSettings.hybridDoorRendering ? renderId : -1;
 	}
 
 	/**

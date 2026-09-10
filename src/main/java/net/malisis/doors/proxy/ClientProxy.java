@@ -9,6 +9,7 @@ import net.malisis.doors.block.RustyLadder;
 import net.malisis.doors.block.VanishingBlock;
 import net.malisis.doors.block.VanishingDiamondBlock;
 import net.malisis.doors.door.block.BigDoor;
+import net.malisis.doors.door.block.Door;
 import net.malisis.doors.door.block.FenceGate;
 import net.malisis.doors.door.block.RustyHatch;
 import net.malisis.doors.door.renderer.BigDoorRenderer;
@@ -43,7 +44,7 @@ public class ClientProxy implements IProxy
 	public void initRenderers()
 	{
 		// doors
-		new DoorRenderer().registerFor(DoorTileEntity.class);
+		new DoorRenderer().registerFor(Door.class, DoorTileEntity.class);
 
 		// fence gates
 		FenceGateRenderer fgr = new FenceGateRenderer();

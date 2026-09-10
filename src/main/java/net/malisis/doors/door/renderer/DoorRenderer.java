@@ -32,7 +32,12 @@ import net.malisis.doors.internal.renderer.animation.AnimationRenderer;
 import net.malisis.doors.internal.renderer.element.Shape;
 import net.malisis.doors.internal.renderer.element.shape.Cube;
 import net.malisis.doors.internal.renderer.model.MalisisModel;
+import net.malisis.doors.MalisisDoorsSettings;
+import net.malisis.doors.door.DoorDescriptor;
 import net.malisis.doors.door.block.Door;
+import net.malisis.doors.door.descriptor.VanillaDoor;
+import net.malisis.doors.door.descriptor.WoodDoor;
+import net.malisis.doors.door.movement.RotatingDoorMovement;
 import net.malisis.doors.door.tileentity.DoorTileEntity;
 import net.minecraft.client.renderer.DestroyBlockProgress;
 
@@ -93,7 +98,10 @@ public class DoorRenderer extends MalisisRenderer
 	public void render()
 	{
 		if (renderType == RenderType.ISBRH_WORLD)
+		{
+			renderStationaryBlock();
 			return;
+		}
 
 		setTileEntity();
 
@@ -105,6 +113,75 @@ public class DoorRenderer extends MalisisRenderer
 		rp.icon.set(null);
 
 		renderTileEntity();
+	}
+
+	/**
+	 * Chunk/TESR handoff needs notification after compiled geometry becomes visible. Forge 1.7.10 exposes no such notification, and the
+	 * supported Angelica setup does not publish one. Keep this false until a renderer adapter can provide that contract; merely observing
+	 * this ISBRH callback proves compilation started, not that its buffers were uploaded.
+	 */
+	private boolean hasSafeChunkRebuildCompletionHook()
+	{
+		return false;
+	}
+
+	private boolean isHybridEligible(DoorTileEntity door)
+	{
+		if (!MalisisDoorsSettings.hybridDoorRendering || !hasSafeChunkRebuildCompletionHook())
+			return false;
+		if (door == null || door.getClass() != DoorTileEntity.class || door.getBlockType() == null || door.getBlockType().getClass() != Door.class)
+			return false;
+
+		DoorDescriptor descriptor = door.getDescriptor();
+		if (!(descriptor instanceof WoodDoor) && !(descriptor instanceof VanillaDoor))
+			return false;
+		if (descriptor.getMovement() == null || descriptor.getMovement().getClass() != RotatingDoorMovement.class)
+			return false;
+
+		return door.getBlockType().getRenderBlockPass() == 0;
+	}
+
+	private void renderStationaryBlock()
+	{
+		DoorTileEntity door = Door.getDoor(world, x, y, z);
+		if (!isHybridEligible(door) || door.isMoving())
+			return;
+
+		// Each callback owns exactly its one-block-high half. All data is local because chunk compilation may be concurrent.
+		Shape stationaryShape = new Cube();
+		stationaryShape.setSize(1, 1, Door.DOOR_WIDTH);
+		stationaryShape.scale(1, 1, 0.995F);
+		applyStationaryPose(stationaryShape, door);
+
+		RenderParameters stationaryParameters = new RenderParameters();
+		configureParams(stationaryParameters);
+		stationaryParameters.icon.set(null);
+		stationaryParameters.brightness.set(block.getMixedBrightnessForBlock(world, x, y, z));
+		drawShape(stationaryShape, stationaryParameters);
+	}
+
+	private void applyStationaryPose(Shape stationaryShape, DoorTileEntity door)
+	{
+		int doorDirection = door.getDirection();
+		if (doorDirection == Door.DIR_SOUTH)
+			stationaryShape.rotate(180, 0, 1, 0, 0, 0, 0);
+		else if (doorDirection == Door.DIR_EAST)
+			stationaryShape.rotate(-90, 0, 1, 0, 0, 0, 0);
+		else if (doorDirection == Door.DIR_WEST)
+			stationaryShape.rotate(90, 0, 1, 0, 0, 0, 0);
+
+		if (door.isCentered())
+			stationaryShape.translate(0, 0, 0.5F - Door.DOOR_WIDTH / 2);
+
+		if (door.isOpened())
+		{
+			float angle = door.isReversed() ? -90 : 90;
+			float hingeX = 0.5F - Door.DOOR_WIDTH / 2;
+			float hingeZ = -0.5F + Door.DOOR_WIDTH / 2;
+			if (door.isReversed())
+				hingeX = -hingeX;
+			stationaryShape.rotate(angle, 0, 1, 0, hingeX, 0, hingeZ);
+		}
 	}
 
 	protected void setTileEntity()
